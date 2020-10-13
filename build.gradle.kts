@@ -32,8 +32,8 @@ kotlin {
 publishing {
     publications.withType<MavenPublication> {
         pom {
-            name.set("libui")
-            description.set("Kotlin/Native interop to libui: a portable GUI library")
+            name.set("file-io")
+            description.set("Kotlin/Native file IO library with standard java-io interface")
             url.set("https://github.com/Archinamon/native-file-io")
             licenses {
                 license {
