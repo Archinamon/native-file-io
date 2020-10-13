@@ -12,6 +12,7 @@ val isRunningInIde: Boolean = System.getProperty("idea.active") == "true"
 repositories {
     mavenCentral()
 }
+
 kotlin {
     jvm {
         compilations.all {
@@ -20,11 +21,10 @@ kotlin {
     }
 
     val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when (hostOs) {
-        "Mac OS X" -> macosX64("posix")
-        "Linux" -> linuxX64("posix")
-//        isMingwX64 -> mingwX64("windows") // not supported yet
+    when {
+        hostOs == "Mac OS X" -> macosX64("posix")
+        hostOs == "Linux" -> linuxX64("posix")
+//        hostOs.startsWith("Windows") -> mingwX64("windows") // not supported yet
         else -> throw GradleException("Host OS is not supported in File-IO project.")
     }
 }
@@ -62,6 +62,9 @@ publishing {
     }
 
     repositories {
+        if (isRunningInIde)
+            return@repositories
+
         maven("https://api.bintray.com/maven/archinamon/maven/native-file-io/;publish=0;override=1") {
             credentials {
                 username = "Archinamon"
