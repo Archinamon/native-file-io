@@ -1,5 +1,7 @@
 package me.archinamon.fileio
 
-class FileNotFoundException(fileName: String, reason: String) : Exception("FileNotFoundException: $fileName ($reason)")
+open class FileIOException(fileName: String, reason: String) : Exception("FileIOException: $fileName ($reason)")
 
-class IllegalFileAccess(fileName: String, reason: String) : Exception("Access denied: $fileName ($reason)")
+class FileNotFoundException(fileName: String, reason: String) : FileIOException(fileName, "FileNotFoundException: ($reason)")
+
+class IllegalFileAccess(fileName: String, reason: String) : FileIOException(fileName, "Access denied: ($reason)")

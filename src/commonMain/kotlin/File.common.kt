@@ -1,20 +1,28 @@
 package me.archinamon.fileio
 
 expect class File(pathname: String) {
+    fun getParent(): String
     fun getParentFile(): File
 
     fun getName(): String
 
     fun lastModified(): Long
     fun mkdirs(): Boolean
-    fun isDirectory(): Boolean
     fun createNewFile(): Boolean
+
+    fun isFile(): Boolean
+    fun isDirectory(): Boolean
 
     fun getAbsolutePath(): String
 
     fun exists(): Boolean
     fun canRead(): Boolean
     fun canWrite(): Boolean
+
+    fun list(): Array<String>
+    fun listFiles(): Array<File>
+
+    fun delete(): Boolean
 }
 
 val File.nameWithoutExtension: String
@@ -25,6 +33,11 @@ expect fun File.readText(): String
 expect fun File.appendText(text: String)
 
 expect fun File.writeText(text: String)
+
+fun File.deleteRecursively(): Boolean = walkBottomUp()
+    .fold(initial = true) { res, it ->
+        (it.delete() || !it.exists()) && res
+    }
 
 fun File.validate() = run {
     print("Validating $nameWithoutExtension file...")

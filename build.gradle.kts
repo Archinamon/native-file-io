@@ -20,12 +20,25 @@ kotlin {
         }
     }
 
-    val hostOs = System.getProperty("os.name")
-    when {
-        hostOs == "Mac OS X" -> macosX64("posix")
-        hostOs == "Linux" -> linuxX64("posix")
-//        hostOs.startsWith("Windows") -> mingwX64("windows") // not supported yet
-        else -> throw GradleException("Host OS is not supported in File-IO project.")
+    linuxX64("posix")
+
+    macosX64 {
+        val testApp: String? by extra
+
+        if (testApp?.toBoolean() == true) {
+            binaries {
+                executable()
+            }
+        }
+    }
+
+//    mingwX64("windows") // not supported yet
+
+    sourceSets {
+        val posixMain by getting
+        val macosX64Main by getting {
+            dependsOn(posixMain)
+        }
     }
 }
 
@@ -67,8 +80,10 @@ publishing {
 
         maven("https://api.bintray.com/maven/archinamon/maven/native-file-io/;publish=0;override=1") {
             credentials {
+                val apiKey: String? by extra
+
                 username = "Archinamon"
-                password = extra["apiKey"] as? String ?: ""
+                password = apiKey ?: ""
             }
         }
     }
