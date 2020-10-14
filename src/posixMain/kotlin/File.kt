@@ -79,14 +79,7 @@ actual class File actual constructor(
         } else pathname
     }
 
-    actual fun lastModified(): Long = memScoped {
-        val result = alloc<stat>()
-        if (stat(pathname, result.ptr) != 0) {
-            return 0L
-        }
-
-        result.st_mtimespec.tv_sec
-    }
+    actual fun lastModified(): Long = modified(this)
 
     actual fun mkdirs(): Boolean {
         if (!getParentFile().exists()) {
@@ -238,12 +231,15 @@ actual class File actual constructor(
             "exists=${exists()}\n" +
             "canRead=${canRead()}\n" +
             "canWrite=${canWrite()}\n" +
+            "isFile=${isFile()}\n" +
             "isDirectory=${isDirectory()}\n" +
             "lastModified=${lastModified()}\n" +
-            (if (isDirectory()) "\tfiles=[${listFiles().joinToString()}]" else "") +
-            "}"
+            (if (isDirectory()) "files=[${listFiles().joinToString()}]" else "") +
+        "}"
     }
 }
+
+internal expect fun modified(file: File): Long
 
 @ExperimentalUnsignedTypes
 actual fun File.readText(): String {

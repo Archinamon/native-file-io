@@ -20,8 +20,13 @@ kotlin {
         }
     }
 
+    // common code for both *nix platforms
     linuxX64("posix")
 
+    // generic linux code
+    linuxX64()
+
+    // darwin macos code
     macosX64 {
         val testApp: String? by extra
 
@@ -37,6 +42,9 @@ kotlin {
     sourceSets {
         val posixMain by getting
         val macosX64Main by getting {
+            dependsOn(posixMain)
+        }
+        val linuxX64Main by getting {
             dependsOn(posixMain)
         }
     }
