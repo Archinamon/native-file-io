@@ -6,8 +6,10 @@ plugins {
 group = "me.archinamon"
 version = "1.0"
 
-val os by lazy { org.gradle.internal.os.OperatingSystem.current()!! }
-val isRunningInIde: Boolean = System.getProperty("idea.active") == "true"
+val isRunningInIde: Boolean = System.getProperty("idea.active")
+    ?.toBoolean() == true
+
+val isPublishingMode: String? by extra
 
 repositories {
     mavenCentral()
@@ -20,8 +22,10 @@ kotlin {
         }
     }
 
-    // common code for both *nix platforms
-    linuxX64("posix")
+    if (isPublishingMode?.toBoolean() != true) {
+        // common code for both *nix platforms
+        linuxX64("posix")
+    }
 
     // generic linux code
     linuxX64()
@@ -40,18 +44,25 @@ kotlin {
 //    mingwX64("windows") // not supported yet
 
     sourceSets {
-        val posixMain by getting
-        val macosX64Main by getting {
-            dependsOn(posixMain)
-        }
-        val linuxX64Main by getting {
-            dependsOn(posixMain)
+        val macosX64Main by getting
+        val linuxX64Main by getting
+
+        if (isPublishingMode?.toBoolean() != true) {
+            val posixMain by getting
+            macosX64Main.dependsOn(posixMain)
+            linuxX64Main.dependsOn(posixMain)
+        } else {
+            macosX64Main.kotlin.srcDir("src/posixMain")
+            linuxX64Main.kotlin.srcDir("src/posixMain")
         }
     }
 }
 
 publishing {
     publications.withType<MavenPublication> {
+        if (name == "posix")
+            return@withType
+
         pom {
             name.set("file-io")
             description.set("Kotlin/Native file IO library with standard java-io interface")
@@ -86,7 +97,7 @@ publishing {
         if (isRunningInIde)
             return@repositories
 
-        maven("https://api.bintray.com/maven/archinamon/maven/native-file-io/;publish=0;override=1") {
+        maven("https://api.bintray.com/maven/archinamon/maven/native-file-io/;publish=1;override=1") {
             credentials {
                 val apiKey: String? by extra
 
