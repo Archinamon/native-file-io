@@ -11,6 +11,17 @@ This library shares standard java file API to native environment, implementing P
 # how to use it
 
 ```kotlin
+// put this block somewhere in root build.gradle.kts file
+
+allprojects {
+  repositories {
+      mavenCentral()
+      maven("https://dl.bintray.com/archinamon/maven")
+  }
+}
+
+// then in module's build.gradle.kts in target's dependencies section:
+
 // expect; for kotlin common modules
 implementation("me.archinamon:file-io:1.0")
 
