@@ -3,7 +3,7 @@
 # native-file-io
 File IO library based on Posix API for Kotlin/Native
 
-Currently, contains only JVM and Posix (Linux X64 / MacOS X64) actual realisation.
+Currently, contains only JS, JVM and Posix (Linux X64 / MacOS X64) actual realisation.
 In plans support mingw (Windows) archetype.
 
 This library shares standard java file API to native environment, implementing Posix API.
@@ -23,9 +23,10 @@ allprojects {
 // then in module's build.gradle.kts in target's dependencies section:
 
 // expect; for kotlin common modules
-implementation("me.archinamon:file-io:1.0")
+implementation("me.archinamon:file-io:1.1")
 
 // actual; demands on target type
-implementation("me.archinamon:file-io-jvm:1.0") // for jvm module
-implementation("me.archinamon:file-io-posix:1.0") // for linux/macos x64 posix module
+implementation("me.archinamon:file-io-jvm:1.1") // for jvm module
+implementation("me.archinamon:file-io-js:1.1") // for kotlin-js module
+implementation("me.archinamon:file-io-posix:1.1") // for linux/macos x64 posix module
 ```
