@@ -28,6 +28,10 @@ expect class File(pathname: String) {
 val File.nameWithoutExtension: String
     get() = getName().substringBeforeLast(".")
 
+expect val File.mimeType: String
+
+expect fun File.readBytes(): ByteArray
+
 expect fun File.readText(): String
 
 expect fun File.appendText(text: String)

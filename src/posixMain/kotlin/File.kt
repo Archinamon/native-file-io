@@ -50,7 +50,7 @@ actual class File actual constructor(
     private val fileSaperator
         get() = if (Platform.osFamily == OsFamily.WINDOWS) "\\" else "/"
 
-    private val modeRead = "r"
+    internal val modeRead = "r"
     private val modeAppend = "a"
     private val modeRewrite = "w"
 
@@ -190,25 +190,6 @@ actual class File actual constructor(
     }
 
     @ExperimentalUnsignedTypes
-    internal fun readBytes(): ByteArray {
-        val fd = fopen(getAbsolutePath(), modeRead)
-        try {
-            memScoped {
-                fseek(fd, 0, SEEK_END)
-                val size = ftell(fd).convert<Int>()
-                fseek(fd, 0, SEEK_SET)
-
-                return ByteArray(size + 1).also { buffer ->
-                    fread(buffer.refTo(0), 1UL, size.convert(), fd)
-                        .ensureUnixCallResult("fread") { ret -> ret > 0U }
-                }
-            }
-        } finally {
-            fclose(fd).ensureUnixCallResult("fclose") { ret -> ret == 0 }
-        }
-    }
-
-    @ExperimentalUnsignedTypes
     internal fun writeBytes(bytes: ByteArray, mode: Int, size: ULong = ULong.MAX_VALUE, elemSize: ULong = 1U) {
         val fd = fopen(getAbsolutePath(), if (mode and O_APPEND == O_APPEND) modeAppend else modeRewrite)
         try {
@@ -240,6 +221,28 @@ actual class File actual constructor(
 }
 
 internal expect fun modified(file: File): Long
+
+actual val File.mimeType: String
+    get() = ""
+
+@ExperimentalUnsignedTypes
+actual fun File.readBytes(): ByteArray {
+    val fd = fopen(getAbsolutePath(), modeRead)
+    try {
+        memScoped {
+            fseek(fd, 0, SEEK_END)
+            val size = ftell(fd).convert<Int>()
+            fseek(fd, 0, SEEK_SET)
+
+            return ByteArray(size + 1).also { buffer ->
+                fread(buffer.refTo(0), 1UL, size.convert(), fd)
+                    .ensureUnixCallResult("fread") { ret -> ret > 0U }
+            }
+        }
+    } finally {
+        fclose(fd).ensureUnixCallResult("fclose") { ret -> ret == 0 }
+    }
+}
 
 @ExperimentalUnsignedTypes
 actual fun File.readText(): String {

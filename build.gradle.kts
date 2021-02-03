@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "me.archinamon"
-version = "1.1"
+version = "1.2"
 
 val isRunningInIde: Boolean = System.getProperty("idea.active")
     ?.toBoolean() == true

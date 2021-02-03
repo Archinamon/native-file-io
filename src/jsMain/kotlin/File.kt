@@ -75,6 +75,13 @@ actual class File constructor(jsfile: JsFile) {
     }
 }
 
+actual val File.mimeType: String
+    get() = innerFile.type
+
+actual fun File.readBytes(): ByteArray {
+    return readText().encodeToByteArray()
+}
+
 actual fun File.readText(): String {
     return FileReaderSync().readAsText(innerFile)
 }
