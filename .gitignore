@@ -13,6 +13,3 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
-
-# macos test app
-/src/macosX64Main/kotlin/runner.kt
