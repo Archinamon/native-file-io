@@ -1,4 +1,4 @@
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.4.10-blue.svg)](http://kotlinlang.org) [ ![Download](https://api.bintray.com/packages/archinamon/maven/native-file-io/images/download.svg) ](https://bintray.com/archinamon/maven/native-file-io/_latestVersion)<br />
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.4.30-blue.svg)](http://kotlinlang.org) [ ![Download](https://api.bintray.com/packages/archinamon/maven/native-file-io/images/download.svg) ](https://bintray.com/archinamon/maven/native-file-io/_latestVersion)<br />
 
 # native-file-io
 File IO library based on Posix API for Kotlin/Native
