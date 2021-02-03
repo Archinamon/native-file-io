@@ -16,6 +16,8 @@ repositories {
 }
 
 kotlin {
+    js { nodejs() }
+
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "1.8"
