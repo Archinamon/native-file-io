@@ -18,7 +18,6 @@ inline fun Long.ensureUnixCallResult(op: String, predicate: (Long) -> Boolean): 
     return this
 }
 
-@ExperimentalUnsignedTypes
 inline fun ULong.ensureUnixCallResult(op: String, predicate: (ULong) -> Boolean): ULong {
     if (!predicate(this)) {
         throw Error("$op: ${strerror(posix_errno())!!.toKString()}")

@@ -96,7 +96,6 @@ actual class File actual constructor(
         return true
     }
 
-    @ExperimentalUnsignedTypes
     actual fun createNewFile(): Boolean {
         if (exists()) {
             return true
@@ -189,7 +188,6 @@ actual class File actual constructor(
         return access(getAbsolutePath(), W_OK) != -1
     }
 
-    @ExperimentalUnsignedTypes
     internal fun writeBytes(bytes: ByteArray, mode: Int, size: ULong = ULong.MAX_VALUE, elemSize: ULong = 1U) {
         val fd = fopen(getAbsolutePath(), if (mode and O_APPEND == O_APPEND) modeAppend else modeRewrite)
         try {
@@ -225,7 +223,6 @@ internal expect fun modified(file: File): Long
 actual val File.mimeType: String
     get() = ""
 
-@ExperimentalUnsignedTypes
 actual fun File.readBytes(): ByteArray {
     val fd = fopen(getAbsolutePath(), modeRead)
     try {
@@ -244,17 +241,14 @@ actual fun File.readBytes(): ByteArray {
     }
 }
 
-@ExperimentalUnsignedTypes
 actual fun File.readText(): String {
     return readBytes().toKString()
 }
 
-@ExperimentalUnsignedTypes
 actual fun File.appendText(text: String) {
     writeBytes(text.encodeToByteArray(), O_RDWR or O_APPEND, strlen(text))
 }
 
-@ExperimentalUnsignedTypes
 actual fun File.writeText(text: String) {
     writeBytes(text.encodeToByteArray(), O_RDWR or O_CREAT, strlen(text))
 }
