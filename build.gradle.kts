@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.4.30"
+    kotlin("multiplatform") version "1.5.10"
     id("maven-publish")
 }
 
@@ -9,8 +9,6 @@ version = "1.2"
 val isRunningInIde: Boolean = System.getProperty("idea.active")
     ?.toBoolean() == true
 
-val isPublishingMode: String? by extra
-
 repositories {
     mavenCentral()
 }
@@ -18,16 +16,7 @@ repositories {
 kotlin {
     js { nodejs() }
 
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-    }
-
-    if (isPublishingMode?.toBoolean() != true) {
-        // common code for both *nix platforms
-        linuxX64("posix")
-    }
+    jvm()
 
     // generic linux code
     linuxX64()
@@ -46,25 +35,21 @@ kotlin {
 //    mingwX64("windows") // not supported yet
 
     sourceSets {
-        val macosX64Main by getting
-        val linuxX64Main by getting
-
-        if (isPublishingMode?.toBoolean() != true) {
-            val posixMain by getting
-            macosX64Main.dependsOn(posixMain)
-            linuxX64Main.dependsOn(posixMain)
-        } else {
-            macosX64Main.kotlin.srcDir("src/posixMain")
-            linuxX64Main.kotlin.srcDir("src/posixMain")
+        val commonMain by getting
+        val posixMain by creating {
+            dependsOn(commonMain)
+        }
+        val macosX64Main by getting {
+            dependsOn(posixMain)
+        }
+        val linuxX64Main by getting {
+            dependsOn(posixMain)
         }
     }
 }
 
 publishing {
     publications.withType<MavenPublication> {
-        if (name == "posix")
-            return@withType
-
         pom {
             name.set("file-io")
             description.set("Kotlin/Native file IO library with standard java-io interface")
