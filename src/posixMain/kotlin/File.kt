@@ -47,7 +47,7 @@ actual class File actual constructor(
     private val pathname: String
 ) {
 
-    private val fileSaperator
+    private val fileSeparator
         get() = if (Platform.osFamily == OsFamily.WINDOWS) "\\" else "/"
 
     internal val modeRead = "r"
@@ -55,7 +55,7 @@ actual class File actual constructor(
     private val modeRewrite = "w"
 
     actual fun getParent(): String {
-        return getAbsolutePath().substringBeforeLast(fileSaperator)
+        return getAbsolutePath().substringBeforeLast(fileSeparator)
     }
 
     actual fun getParentFile(): File {
@@ -63,18 +63,18 @@ actual class File actual constructor(
     }
 
     actual fun getName(): String {
-        return if (fileSaperator in pathname) {
-            pathname.split(fileSaperator).last(String::isNotBlank)
+        return if (fileSeparator in pathname) {
+            pathname.split(fileSeparator).last(String::isNotBlank)
         } else {
             pathname
         }
     }
 
     actual fun getAbsolutePath(): String {
-        return if (!pathname.startsWith(fileSaperator)) {
+        return if (!pathname.startsWith(fileSeparator)) {
             memScoped {
                 getcwd(allocArray(FILENAME_MAX), FILENAME_MAX)
-                    ?.toKString() + fileSaperator + pathname
+                    ?.toKString() + fileSeparator + pathname
             }
         } else pathname
     }
@@ -158,15 +158,16 @@ actual class File actual constructor(
             .toTypedArray()
     }
 
-    actual fun listFiles(): Array<File> = list().map { name ->
+    actual fun listFiles(): Array<File> {
         val thisPath = getAbsolutePath().let { path ->
-            if (!path.endsWith(fileSaperator)) {
-                path + fileSaperator
+            if (!path.endsWith(fileSeparator)) {
+                path + fileSeparator
             } else path
         }
-
-        File(thisPath + name)
-    }.toTypedArray()
+        return list()
+            .map { name -> File(thisPath + name) }
+            .toTypedArray()
+    }
 
     actual fun delete(): Boolean {
         if (isDirectory()) {
