@@ -32,7 +32,7 @@ kotlin {
         }
     }
 
-//    mingwX64("windows") // not supported yet
+    mingwX64()
 
     sourceSets {
         val commonMain by getting
