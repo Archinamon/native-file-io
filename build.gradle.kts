@@ -9,6 +9,8 @@ version = "1.2"
 val isRunningInIde: Boolean = System.getProperty("idea.active")
     ?.toBoolean() == true
 
+val testApp: String? by extra
+
 repositories {
     mavenCentral()
 }
@@ -23,7 +25,6 @@ kotlin {
 
     // darwin macos code
     macosX64 {
-        val testApp: String? by extra
 
         if (testApp?.toBoolean() == true) {
             binaries {
@@ -35,15 +36,35 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
         val posixMain by creating {
             dependsOn(commonMain)
         }
         val macosX64Main by getting {
             dependsOn(posixMain)
+            if (testApp?.toBoolean() == true) {
+                kotlin.srcDirs("src/macosX64Runner/kotlin")
+            }
         }
         val linuxX64Main by getting {
             dependsOn(posixMain)
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+            }
+        }
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-js"))
+            }
         }
     }
 }
