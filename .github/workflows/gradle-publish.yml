@@ -49,4 +49,4 @@ jobs:
     - name: Publish mingwX64 target
       if: ${{ startsWith(matrix.os, 'windows') }}
       with:
-        arguments: publishMingwX64 -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
+        arguments: publishMingwX64PublicationToMavenRepository -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
