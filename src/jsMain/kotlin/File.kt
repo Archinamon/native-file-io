@@ -12,14 +12,18 @@ actual class File constructor(jsfile: JsFile) {
         virtual = true
     }
 
-    actual fun getParent(): String {
-        return if ("/" in innerFile.name) {
-            innerFile.name.split("/").let { if (it.size > 1) it[it.lastIndex - 1] else it.last() }
-        } else innerFile.name
+    actual fun getParent(): String? {
+        return when {
+            !exists() -> null
+            "/" in innerFile.name -> innerFile.name
+                .split("/")
+                .let { if (it.size > 1) it[it.lastIndex - 1] else it.last() }
+            else -> innerFile.name
+        }
     }
 
-    actual fun getParentFile(): File {
-        return File(getParent())
+    actual fun getParentFile(): File? {
+        return getParent()?.run(::File)
     }
 
     actual fun getName(): String {

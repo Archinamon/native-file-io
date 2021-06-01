@@ -47,34 +47,34 @@ actual class File actual constructor(
     private val pathname: String
 ) {
 
-    private val fileSaperator
+    private val fileSeparator
         get() = if (Platform.osFamily == OsFamily.WINDOWS) "\\" else "/"
 
     internal val modeRead = "r"
     private val modeAppend = "a"
     private val modeRewrite = "w"
 
-    actual fun getParent(): String {
-        return getAbsolutePath().substringBeforeLast(fileSaperator)
+    actual fun getParent(): String? {
+        return if (exists()) getAbsolutePath().substringBeforeLast(fileSeparator) else  null
     }
 
-    actual fun getParentFile(): File {
-        return File(getParent())
+    actual fun getParentFile(): File? {
+        return getParent()?.run(::File)
     }
 
     actual fun getName(): String {
-        return if (fileSaperator in pathname) {
-            pathname.split(fileSaperator).last(String::isNotBlank)
+        return if (fileSeparator in pathname) {
+            pathname.split(fileSeparator).last(String::isNotBlank)
         } else {
             pathname
         }
     }
 
     actual fun getAbsolutePath(): String {
-        return if (!pathname.startsWith(fileSaperator)) {
+        return if (!pathname.startsWith(fileSeparator)) {
             memScoped {
                 getcwd(allocArray(FILENAME_MAX), FILENAME_MAX)
-                    ?.toKString() + fileSaperator + pathname
+                    ?.toKString() + fileSeparator + pathname
             }
         } else pathname
     }
@@ -82,12 +82,10 @@ actual class File actual constructor(
     actual fun lastModified(): Long = modified(this)
 
     actual fun mkdirs(): Boolean {
-        if (!getParentFile().exists()) {
-            getParentFile().mkdirs()
-        }
+        if (exists()) return false
 
-        if (exists()) {
-            return true
+        if (getParentFile()?.exists() == false) {
+            getParentFile()?.mkdirs()
         }
 
         mkdir(pathname, (S_IRWXU or S_IRWXG or S_IRWXO).convert())
@@ -158,15 +156,16 @@ actual class File actual constructor(
             .toTypedArray()
     }
 
-    actual fun listFiles(): Array<File> = list().map { name ->
+    actual fun listFiles(): Array<File> {
         val thisPath = getAbsolutePath().let { path ->
-            if (!path.endsWith(fileSaperator)) {
-                path + fileSaperator
+            if (!path.endsWith(fileSeparator)) {
+                path + fileSeparator
             } else path
         }
-
-        File(thisPath + name)
-    }.toTypedArray()
+        return list()
+            .map { name -> File(thisPath + name) }
+            .toTypedArray()
+    }
 
     actual fun delete(): Boolean {
         if (isDirectory()) {

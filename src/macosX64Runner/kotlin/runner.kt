@@ -8,7 +8,7 @@ fun main(args: Array<String>) = args.forEach { path ->
     if (path.endsWith("/")) {
         println("make directories... ${file.mkdirs()}")
     } else {
-        println("make directories... ${file.getParentFile().mkdirs()}")
+        println("make directories... ${file.getParentFile()?.mkdirs()}")
         println("creating file... ${file.createNewFile()}")
     }
 
