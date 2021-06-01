@@ -25,6 +25,7 @@ jobs:
         java-version: 11
 
     - name: Build with Gradle
+      uses: eskatos/gradle-command-action@v1
       with:
         arguments: clean build -i -s
       
@@ -42,11 +43,13 @@ jobs:
         sudo bash -c "echo 'signing.secretKeyRingFile=$GPG_RINGFILE >> gradle.properties"
 
     - name: Publish jvm/js/posix targets
+      uses: eskatos/gradle-command-action@v1
       if: ${{ startsWith(matrix.os, 'macos') }}
       with:
         arguments: publish -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
       
     - name: Publish mingwX64 target
+      uses: eskatos/gradle-command-action@v1
       if: ${{ startsWith(matrix.os, 'windows') }}
       with:
         arguments: publishMingwX64PublicationToMavenRepository -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
