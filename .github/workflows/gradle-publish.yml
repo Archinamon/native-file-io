@@ -27,7 +27,7 @@ jobs:
     - name: Build with Gradle
       uses: eskatos/gradle-command-action@v1
       with:
-        arguments: clean build -i -s
+        arguments: clean build -x :jsNodeTest -i -s
       
     - name: Prepare publications
       env:
