@@ -1,5 +1,7 @@
 package me.archinamon.fileio
 
+import kotlinx.cinterop.CPointed
+import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -26,7 +28,6 @@ import platform.posix.S_IRWXO
 import platform.posix.S_IRWXU
 import platform.posix.W_OK
 import platform.posix.access
-import platform.posix.closedir
 import platform.posix.dirent
 import platform.posix.fclose
 import platform.posix.fopen
@@ -35,9 +36,6 @@ import platform.posix.fseek
 import platform.posix.ftell
 import platform.posix.fwrite
 import platform.posix.getcwd
-import platform.posix.mkdir
-import platform.posix.opendir
-import platform.posix.readdir
 import platform.posix.rmdir
 import platform.posix.stat
 import platform.posix.strlen
@@ -73,7 +71,7 @@ actual class File actual constructor(
     actual fun getAbsolutePath(): String {
         return if (!pathname.startsWith(fileSaperator)) {
             memScoped {
-                getcwd(allocArray(FILENAME_MAX), FILENAME_MAX)
+                getcwd(allocArray(FILENAME_MAX), FILENAME_MAX.convert())
                     ?.toKString() + fileSaperator + pathname
             }
         } else pathname
@@ -119,7 +117,7 @@ actual class File actual constructor(
             stat(pathname, result.ptr)
                 .ensureUnixCallResult("stat") { ret -> ret == 0 }
 
-            return@memScoped (result.st_mode.convert<Int>() and S_IFREG) == S_IFREG
+            return@memScoped result.checkFileIs(S_IFREG)
         }
     }
 
@@ -134,7 +132,7 @@ actual class File actual constructor(
             stat(pathname, result.ptr)
                 .ensureUnixCallResult("stat") { ret -> ret == 0 }
 
-            return@memScoped (result.st_mode.convert<Int>() and S_IFDIR) == S_IFDIR
+            return@memScoped result.checkFileIs(S_IFDIR)
         }
     }
 
@@ -220,6 +218,17 @@ actual class File actual constructor(
 
 internal expect fun modified(file: File): Long
 
+internal expect fun stat.checkFileIs(flag: Int): Boolean
+
+internal expect fun mkdir(path: String, mode: UInt): Int
+
+internal expect fun opendir(path: String): CPointer<out CPointed>?
+
+internal expect fun readdir(dir: CPointer<out CPointed>): CPointer<dirent>?
+
+internal expect fun closedir(dir: CPointer<out CPointed>): Int
+
+//todo determine mimeType on file extension; see jdk mappings
 actual val File.mimeType: String
     get() = ""
 
