@@ -1,10 +1,11 @@
 plugins {
     kotlin("multiplatform") version "1.5.10"
     id("maven-publish")
+    id("signing")
 }
 
 group = "me.archinamon"
-version = "1.2"
+version = "1.2.2"
 
 val isRunningInIde: Boolean = System.getProperty("idea.active")
     ?.toBoolean() == true
@@ -48,8 +49,9 @@ kotlin {
     }
 }
 
+val publicationName = "naiveFileIo"
 publishing {
-    publications.withType<MavenPublication> {
+    publications.register(publicationName, MavenPublication::class) {
         pom {
             name.set("file-io")
             description.set("Kotlin/Native file IO library with standard java-io interface")
@@ -84,13 +86,22 @@ publishing {
         if (isRunningInIde)
             return@repositories
 
-        maven("https://api.bintray.com/maven/archinamon/maven/native-file-io/;publish=1;override=1") {
+        val isSnapshotPublishing: String? by extra
+        val repositoryUrl = if (isSnapshotPublishing?.toBoolean() == true)
+            "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+        else "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+        maven(repositoryUrl) {
             credentials {
                 val apiKey: String? by extra
 
                 username = "Archinamon"
-                password = apiKey ?: ""
+                password = apiKey ?: "[empty token]"
             }
         }
     }
+}
+
+signing {
+    sign(publishing.publications)
 }
