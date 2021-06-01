@@ -1,8 +1,8 @@
 package me.archinamon.fileio
 
 expect class File(pathname: String) {
-    fun getParent(): String
-    fun getParentFile(): File
+    fun getParent(): String?
+    fun getParentFile(): File?
 
     fun getName(): String
 
