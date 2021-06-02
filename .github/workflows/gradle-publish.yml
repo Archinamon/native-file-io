@@ -45,9 +45,9 @@ jobs:
       run: |
         git fetch --unshallow
         sudo bash -c "echo '$GPG_SECRET_CONTENT' | base64 -d > '$GPG_RINGFILE'
-        sudo bash -c "echo 'signing.keyId=$GPG_KEY_ID >> gradle.properties"
-        sudo bash -c "echo 'signing.password=$GPG_PASSWORD >> gradle.properties"
-        sudo bash -c "echo 'signing.secretKeyRingFile=$GPG_RINGFILE >> gradle.properties"
+        sudo bash -c "echo 'signing.keyId=$GPG_KEY_ID' >> gradle.properties"
+        sudo bash -c "echo 'signing.password=$GPG_PASSWORD' >> gradle.properties"
+        sudo bash -c "echo 'signing.secretKeyRingFile=$GPG_RINGFILE' >> gradle.properties"
 
     - name: Publish jvm/js/posix targets
       uses: eskatos/gradle-command-action@v1
