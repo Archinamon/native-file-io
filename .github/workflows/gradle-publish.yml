@@ -44,7 +44,6 @@ jobs:
         GPG_RINGFILE: ${{ secrets.GPG_RINGFILE }}
         GPG_SECRET_CONTENT: ${{ secrets.GPG_KEY_CONTENTS }}
       run: |
-        git fetch --unshallow
         bash -c "echo '$GPG_SECRET_CONTENT' | base64 -d > '$GPG_RINGFILE'"
         bash -c "echo 'signing.keyId=$GPG_KEY_ID' >> gradle.properties"
         bash -c "echo 'signing.password=$GPG_PASSWORD' >> gradle.properties"
