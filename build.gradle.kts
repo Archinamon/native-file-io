@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.5.10"
+    id("org.jetbrains.dokka") version "1.4.32"
     id("maven-publish")
     id("signing")
 }
@@ -70,9 +71,26 @@ kotlin {
     }
 }
 
-val publicationName = "naiveFileIo"
+val dokkaOutputDir = "$buildDir/dokka"
+
+tasks.dokkaHtml {
+    outputDirectory.set(file(dokkaOutputDir))
+}
+
+val deleteDokkaOutputDir by tasks.registering(Delete::class) {
+    delete(dokkaOutputDir)
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    dependsOn(deleteDokkaOutputDir, tasks.dokkaHtml)
+    archiveClassifier.set("javadoc")
+    from(dokkaOutputDir)
+}
+
 publishing {
-    publications.register(publicationName, MavenPublication::class) {
+    publications.withType<MavenPublication> {
+        artifact(javadocJar)
+
         pom {
             name.set("file-io")
             description.set("Kotlin/Native file IO library with standard java-io interface")
