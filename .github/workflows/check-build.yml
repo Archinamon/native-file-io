@@ -33,12 +33,15 @@ jobs:
             ~/.gradle
           key: ${{ runner.os }}-${{ hashFiles('gradle.properties') }}
 
-      - with:
+      - uses: eskatos/gradle-command-action@v1
+        with:
           arguments: linuxX64MainKlibrary -s -i
         if: ${{ matrix.os == 'ubuntu-latest' }}
-      - with:
+      - uses: eskatos/gradle-command-action@v1
+        with:
           arguments: macosX64MainKlibrary -s -i
         if: ${{ matrix.os == 'macos-latest' }}
-      - with:
+      - uses: eskatos/gradle-command-action@v1
+        with:
           arguments: mingwX64MainKlibrary -s -i
         if: ${{ matrix.os != 'windows-latest' }}
