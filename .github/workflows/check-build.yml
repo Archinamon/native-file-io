@@ -23,9 +23,22 @@ jobs:
       - uses: fwilhe2/setup-kotlin@main
         with:
           install-native: true
-      - run: linuxX64MainKlibrary -s -i
+      
+      - name: Cache Build files
+        uses: actions/cache@v2
+        if: ${{ !startsWith(matrix.os, 'windows') }}
+        with:
+          path: |
+            ~/.konan
+            ~/.gradle
+          key: ${{ runner.os }}-${{ hashFiles('gradle.properties') }}
+
+      - with:
+          arguments: linuxX64MainKlibrary -s -i
         if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: macosX64MainKlibrary -s -i
+      - with:
+          arguments: macosX64MainKlibrary -s -i
         if: ${{ matrix.os == 'macos-latest' }}
-      - run: mingwX64MainKlibrary -s -i
+      - with:
+          arguments: mingwX64MainKlibrary -s -i
         if: ${{ matrix.os != 'windows-latest' }}
