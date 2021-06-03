@@ -44,4 +44,4 @@ jobs:
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: mingwX64MainKlibrary -s -i
-        if: ${{ matrix.os != 'windows-latest' }}
+        if: ${{ matrix.os == 'windows-latest' }}
