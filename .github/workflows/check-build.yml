@@ -1,0 +1,31 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Master Build
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  gradle:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: eskatos/gradle-command-action@v1
+      - uses: fwilhe2/setup-kotlin@main
+        with:
+          install-native: true
+      - run: linuxX64MainKlibrary -s -i
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: macosX64MainKlibrary -s -i
+        if: ${{ matrix.os == 'macos-latest' }}
+      - run: mingwX64MainKlibrary -s -i
+        if: ${{ matrix.os != 'windows-latest' }}
