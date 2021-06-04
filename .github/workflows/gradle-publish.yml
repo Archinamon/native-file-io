@@ -4,6 +4,8 @@
 name: Gradle Package
 
 on:
+  workflow_dispatch:
+
   release:
     types: [created]
 
@@ -49,15 +51,15 @@ jobs:
         bash -c "echo 'signing.password=$GPG_PASSWORD' >> gradle.properties"
         bash -c "echo 'signing.secretKeyRingFile=$GPG_RINGFILE' >> gradle.properties"
 
-    - name: Publish jvm/js/posix targets
-      uses: eskatos/gradle-command-action@v1
-      if: ${{ startsWith(matrix.os, 'macos') }}
+    - uses: eskatos/gradle-command-action@v1
+      name: Publish targets to maven
       with:
         arguments: publish -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
-      
-# not works now, need to adopt scripts
-#     - name: Publish mingwX64 target
-#       uses: eskatos/gradle-command-action@v1
-#       if: ${{ startsWith(matrix.os, 'windows') }}
-#       with:
-#         arguments: publishMingwX64PublicationToMavenRepository -x compilePosix -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
+      if: ${{ startsWith(matrix.os, 'macos') }}
+
+    - uses: eskatos/gradle-command-action@v1
+    - uses: crazy-max/ghaction-import-gpg@v3
+      name: Publish targets to maven
+      with:
+        arguments: publishMingwX64PublicationToMavenRepository -x compilePosix -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
+      if: ${{ startsWith(matrix.os, 'windows') }}
