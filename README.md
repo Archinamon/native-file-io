@@ -17,7 +17,6 @@ This library shares standard java file API to native environment, implementing P
 allprojects {
   repositories {
       mavenCentral()
-      maven("https://dl.bintray.com/archinamon/maven")
   }
 }
 
