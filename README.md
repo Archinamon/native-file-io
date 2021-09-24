@@ -4,7 +4,7 @@
 # native-file-io
 File IO library based on Posix API for Kotlin/Native
 
-Currently, contains only JS, JVM and Posix (Linux X64 / MacOS X64) actual realisation.
+Currently, contains only JS, JVM, Windows and Posix (Linux X64 / MacOS X64) actual realisation.
 In plans support mingw (Windows) archetype.
 
 This library shares standard java file API to native environment, implementing Posix API.
