@@ -29,7 +29,7 @@ implementation("me.archinamon:file-io:$fileIoVersion")
 // actual; demands on target type
 implementation("me.archinamon:file-io-jvm:$fileIoVersion") // for jvm module
 implementation("me.archinamon:file-io-js:$fileIoVersion") // for kotlin-js module
-implementation("me.archinamon:file-io-linuxx64:fileIoVersion") // for linux x64 posix module
-implementation("me.archinamon:file-io-macosx64:fileIoVersion") // for macOS x64 posix module
-implementation("me.archinamon:file-io-mingwx64:fileIoVersion") // for windows x64 module
+implementation("me.archinamon:file-io-linuxx64:$fileIoVersion") // for linux x64 posix module
+implementation("me.archinamon:file-io-macosx64:$fileIoVersion") // for macOS x64 posix module
+implementation("me.archinamon:file-io-mingwx64:$fileIoVersion") // for windows x64 module
 ```
