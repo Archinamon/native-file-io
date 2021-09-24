@@ -69,7 +69,6 @@ jobs:
       run: |
         $Env:GPG_SECRET_CONTENT | Out-File encodedContent.ring
         certutil -decode encodedContent.ring $Env:GPG_RINGFILE
-        ls ./
         echo signing.keyId=$Env:GPG_KEY_ID >> gradle.properties
         echo signing.password=$Env:GPG_PASSWORD >> gradle.properties
         echo signing.secretKeyRingFile=$Env:GPG_RINGFILE >> gradle.properties
