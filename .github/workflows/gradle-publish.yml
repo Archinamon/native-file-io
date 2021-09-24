@@ -67,10 +67,11 @@ jobs:
         GPG_RINGFILE: ${{ secrets.GPG_RINGFILE }}
         GPG_SECRET_CONTENT: ${{ secrets.GPG_KEY_CONTENTS }}
       run: |
-        certutil -decode $Env:GPG_SECRET_CONTENT C:/$Env:GPG_RINGFILE
+        $Env:GPG_SECRET_CONTENT | Out-File encodedContent.ring
+        certutil -decode encodedContent.ring $Env:GPG_RINGFILE
         echo signing.keyId=$Env:GPG_KEY_ID >> gradle.properties
         echo signing.password=$Env:GPG_PASSWORD >> gradle.properties
-        echo signing.secretKeyRingFile=C:/$Env:GPG_RINGFILE >> gradle.properties
+        echo signing.secretKeyRingFile=$Env:GPG_RINGFILE >> gradle.properties
 
     - uses: eskatos/gradle-command-action@v1
       name: Publish targets to maven
