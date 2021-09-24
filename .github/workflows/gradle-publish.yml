@@ -71,6 +71,8 @@ jobs:
         $gpg_content = $Env:GPG_SECRET_CONTENT
         $gpg_keyId = $Env:GPG_KEY_ID
         $gpg_pass = $Env:GPG_PASSWORD
+        echo $gpg_filepath
+        echo $gpg_content
         certutil -decode $gpg_content $gpg_filepath
         echo signing.keyId=$gpg_keyId >> gradle.properties
         echo signing.password=$gpg_pass >> gradle.properties
