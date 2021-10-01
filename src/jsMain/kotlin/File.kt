@@ -99,6 +99,6 @@ actual fun File.writeText(text: String) {
     innerFile = JsFile(text.encodeToByteArray().toTypedArray(), innerFile.name)
 }
 
-internal fun File.writeBytes(bytes: ByteArray) {
+actual fun File.writeBytes(bytes: ByteArray) {
     innerFile = JsFile(bytes.toTypedArray(), innerFile.name)
 }

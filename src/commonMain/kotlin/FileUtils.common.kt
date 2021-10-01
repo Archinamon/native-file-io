@@ -6,7 +6,7 @@ fun File.copyTo(dest: String, overwrite: Boolean) {
 
 fun File.copyTo(dest: File, overwrite: Boolean) {
     if (this.isDirectory()) {
-        throw IllegalArgumentException("Moving/copying directories directly not allowed!")
+        throw UnsupportedOperationException("Moving/copying directories directly not allowed!")
     }
 
     this.readBytes().let { bytes ->
@@ -19,7 +19,7 @@ fun File.copyTo(dest: File, overwrite: Boolean) {
                 createNewFile()
             }
 
-            writeBinaryData(bytes)
+            writeBytes(bytes)
         }
     }
 }
@@ -34,4 +34,4 @@ fun File.moveTo(dest: File, overwrite: Boolean) {
     this.delete()
 }
 
-expect fun File.writeBinaryData(binary: ByteArray)
+expect fun File.writeBytes(bytes: ByteArray)
