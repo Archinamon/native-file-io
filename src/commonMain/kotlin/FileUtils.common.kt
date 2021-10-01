@@ -6,7 +6,7 @@ fun File.copyTo(dest: String, overwrite: Boolean) {
 
 fun File.copyTo(dest: File, overwrite: Boolean) {
     if (this.isDirectory()) {
-        throw IllegalFileAccess(this.getAbsolutePath(), "Moving/copying directories directly not allowed!")
+        throw IllegalArgumentException("Moving/copying directories directly not allowed!")
     }
 
     this.readBytes().let { bytes ->
