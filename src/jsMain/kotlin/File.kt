@@ -98,3 +98,7 @@ actual fun File.appendText(text: String) {
 actual fun File.writeText(text: String) {
     innerFile = JsFile(text.encodeToByteArray().toTypedArray(), innerFile.name)
 }
+
+actual fun File.writeBytes(bytes: ByteArray) {
+    innerFile = JsFile(bytes.toTypedArray(), innerFile.name)
+}

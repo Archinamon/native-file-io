@@ -249,6 +249,11 @@ actual fun File.readBytes(): ByteArray {
     }
 }
 
+actual fun File.writeBytes(bytes: ByteArray) {
+    // no need to use pinning or memscope, cause it's inside the method already does
+    writeBytes(bytes, O_RDWR, bytes.size.convert(), Byte.SIZE_BYTES.convert())
+}
+
 actual fun File.readText(): String {
     return readBytes().toKString()
 }
