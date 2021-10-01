@@ -76,11 +76,11 @@ jobs:
     - uses: eskatos/gradle-command-action@v1
       name: Publish targets to maven
       with:
-        arguments: publish -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
+        arguments: publish -PapiKey=${{ secrets.SONOTYPE_TOKEN }} '-Dorg.gradle.jvmargs=-Xmx2g -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8'
       if: ${{ startsWith(matrix.os, 'macos') }}
 
     - uses: eskatos/gradle-command-action@v1
       name: Publish targets to maven
       with:
-        arguments: publishMingwX64PublicationToMavenRepository -s -i -x compilePosix -PapiKey=${{ secrets.SONOTYPE_TOKEN }}
+        arguments: publishMingwX64PublicationToMavenRepository -s -i -x compilePosix -PapiKey=${{ secrets.SONOTYPE_TOKEN }} '-Dorg.gradle.jvmargs=-Xmx2g -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8'
       if: ${{ startsWith(matrix.os, 'windows') }}
