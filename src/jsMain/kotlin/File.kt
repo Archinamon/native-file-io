@@ -15,8 +15,8 @@ actual class File constructor(jsfile: JsFile) {
     actual fun getParent(): String? {
         return when {
             !exists() -> null
-            fileSeparator in innerFile.name -> innerFile.name
-                .split(fileSeparator)
+            filePathSeparator in innerFile.name -> innerFile.name
+                .split(filePathSeparator)
                 .let { if (it.size > 1) it[it.lastIndex - 1] else it.last() }
             else -> innerFile.name
         }
@@ -79,7 +79,7 @@ actual class File constructor(jsfile: JsFile) {
     }
 }
 
-actual val File.fileSeparator by lazy { '/' }
+actual val filePathSeparator by lazy { '/' }
 
 actual val File.mimeType: String
     get() = innerFile.type

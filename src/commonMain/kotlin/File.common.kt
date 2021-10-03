@@ -25,7 +25,7 @@ expect class File(pathname: String) {
     fun delete(): Boolean
 }
 
-expect val File.fileSeparator: Char
+expect val filePathSeparator: Char
 
 val File.nameWithoutExtension: String
     get() = getName().substringBeforeLast(".")
@@ -48,7 +48,7 @@ fun File.deleteRecursively(): Boolean = walkBottomUp()
 fun File.getParentFileUnsafe(): File {
     return getParentFile()
         ?: getAbsolutePath()
-            .substringBeforeLast(fileSeparator)
+            .substringBeforeLast(filePathSeparator)
             .run(::File)
 }
 

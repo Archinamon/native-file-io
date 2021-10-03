@@ -50,7 +50,7 @@ actual class File actual constructor(
     private val modeRewrite = "w"
 
     actual fun getParent(): String? {
-        return if (exists()) getAbsolutePath().substringBeforeLast(fileSeparator) else null
+        return if (exists()) getAbsolutePath().substringBeforeLast(filePathSeparator) else null
     }
 
     actual fun getParentFile(): File? {
@@ -58,18 +58,18 @@ actual class File actual constructor(
     }
 
     actual fun getName(): String {
-        return if (fileSeparator in pathname) {
-            pathname.split(fileSeparator).last(String::isNotBlank)
+        return if (filePathSeparator in pathname) {
+            pathname.split(filePathSeparator).last(String::isNotBlank)
         } else {
             pathname
         }
     }
 
     actual fun getAbsolutePath(): String {
-        return if (!pathname.startsWith(fileSeparator)) {
+        return if (!pathname.startsWith(filePathSeparator)) {
             memScoped {
                 getcwd(allocArray(FILENAME_MAX), FILENAME_MAX.convert())
-                    ?.toKString() + fileSeparator + pathname
+                    ?.toKString() + filePathSeparator + pathname
             }
         } else pathname
     }
@@ -153,8 +153,8 @@ actual class File actual constructor(
 
     actual fun listFiles(): Array<File> {
         val thisPath = getAbsolutePath().let { path ->
-            if (!path.endsWith(fileSeparator)) {
-                path + fileSeparator
+            if (!path.endsWith(filePathSeparator)) {
+                path + filePathSeparator
             } else path
         }
         return list()
@@ -224,7 +224,7 @@ internal expect fun readdir(dir: CPointer<out CPointed>): CPointer<dirent>?
 
 internal expect fun closedir(dir: CPointer<out CPointed>): Int
 
-actual val File.fileSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
+actual val filePathSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
 
 //todo determine mimeType on file extension; see jdk mappings
 actual val File.mimeType: String
