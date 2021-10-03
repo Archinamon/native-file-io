@@ -15,8 +15,8 @@ actual class File constructor(jsfile: JsFile) {
     actual fun getParent(): String? {
         return when {
             !exists() -> null
-            "/" in innerFile.name -> innerFile.name
-                .split("/")
+            fileSeparator in innerFile.name -> innerFile.name
+                .split(fileSeparator)
                 .let { if (it.size > 1) it[it.lastIndex - 1] else it.last() }
             else -> innerFile.name
         }
@@ -78,6 +78,8 @@ actual class File constructor(jsfile: JsFile) {
         throw UnsupportedOperationException("Not available in JS!")
     }
 }
+
+actual val File.fileSeparator by lazy { '/' }
 
 actual val File.mimeType: String
     get() = innerFile.type

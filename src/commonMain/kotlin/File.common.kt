@@ -25,6 +25,8 @@ expect class File(pathname: String) {
     fun delete(): Boolean
 }
 
+expect val File.fileSeparator: Char
+
 val File.nameWithoutExtension: String
     get() = getName().substringBeforeLast(".")
 
@@ -42,6 +44,13 @@ fun File.deleteRecursively(): Boolean = walkBottomUp()
     .fold(initial = true) { res, it ->
         (it.delete() || !it.exists()) && res
     }
+
+fun File.getParentFileUnsafe(): File {
+    return getParentFile()
+        ?: getAbsolutePath()
+            .substringBeforeLast(fileSeparator)
+            .run(::File)
+}
 
 fun File.validate() = run {
     print("Validating $nameWithoutExtension file...")

@@ -45,15 +45,12 @@ actual class File actual constructor(
     private val pathname: String
 ) {
 
-    private val fileSeparator
-        get() = if (Platform.osFamily == OsFamily.WINDOWS) "\\" else "/"
-
     internal val modeRead = "r"
     private val modeAppend = "a"
     private val modeRewrite = "w"
 
     actual fun getParent(): String? {
-        return if (exists()) getAbsolutePath().substringBeforeLast(fileSeparator) else  null
+        return if (exists()) getAbsolutePath().substringBeforeLast(fileSeparator) else null
     }
 
     actual fun getParentFile(): File? {
@@ -226,6 +223,8 @@ internal expect fun opendir(path: String): CPointer<out CPointed>?
 internal expect fun readdir(dir: CPointer<out CPointed>): CPointer<dirent>?
 
 internal expect fun closedir(dir: CPointer<out CPointed>): Int
+
+actual val File.fileSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
 
 //todo determine mimeType on file extension; see jdk mappings
 actual val File.mimeType: String

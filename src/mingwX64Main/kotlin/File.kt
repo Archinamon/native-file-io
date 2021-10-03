@@ -10,8 +10,6 @@ private const val EPOCH_DIFF = 11644473600000
 actual class File actual constructor(
     private val pathname: String
 ) {
-    private val fileSeparator
-        get() = if (Platform.osFamily == OsFamily.WINDOWS) "\\" else "/"
 
     actual fun getParent(): String? {
         return if (exists()) getAbsolutePath().substringBeforeLast(fileSeparator) else null
@@ -267,6 +265,8 @@ actual class File actual constructor(
             "}"
     }
 }
+
+actual val File.fileSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
 
 actual val File.mimeType: String
     get() = ""
