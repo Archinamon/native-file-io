@@ -18,6 +18,17 @@ class FileTests {
     }
 
     @Test
+    fun testExistentRootFile() {
+        val testFile = File("build/test/testNonexistentRootFile.txt")
+
+        assertFalse(testFile.exists(), "file should not exist")
+        assertNull(testFile.getParentFile(), "file should not have parent file")
+        assertNotNull(testFile.getParentFileUnsafe(), "file should not have parent file")
+
+        assertEquals("test", testFile.getParentFileUnsafe().getName())
+    }
+
+    @Test
     fun testFileCreateAndDelete() {
         val testFolder = File("build/testNewDirectoryCreation")
 
