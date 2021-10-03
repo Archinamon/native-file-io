@@ -7,11 +7,9 @@ import platform.windows.*
 private const val EPOCH_DIFF = 11644473600000
 
 
-actual class File {
+actual class File actual constructor(pathname: String) {
 
     private val pathname: String = pathname.replace('/', filePathSeparator)
-
-    actual constructor(pathname: String)
 
     actual fun getParent(): String? {
         return if (exists()) getAbsolutePath().substringBeforeLast(filePathSeparator) else null
