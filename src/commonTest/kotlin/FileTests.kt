@@ -25,7 +25,7 @@ class FileTests {
         assertFalse(testFile.getParentFile()?.exists() == true, "file should not have parent file")
         assertNotNull(testFile.getParentFileUnsafe(), "file should not have parent file")
 
-        assertEquals("testFileRoot", testFile.getParentFileUnsafe().getName())
+        assertEquals("testFileRoot", testFile.getParentFileUnsafe().getName(), "couldn't get parent file name")
     }
 
     @Test
