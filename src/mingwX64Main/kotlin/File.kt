@@ -7,14 +7,12 @@ import platform.windows.*
 private const val EPOCH_DIFF = 11644473600000
 
 
-actual class File actual constructor(
-    private val pathname: String
-) {
-    private val fileSeparator
-        get() = if (Platform.osFamily == OsFamily.WINDOWS) "\\" else "/"
+actual class File actual constructor(pathname: String) {
+
+    private val pathname: String = pathname.replace('/', filePathSeparator)
 
     actual fun getParent(): String? {
-        return if (exists()) getAbsolutePath().substringBeforeLast(fileSeparator) else null
+        return if (exists()) getAbsolutePath().substringBeforeLast(filePathSeparator) else null
     }
 
     actual fun getParentFile(): File? {
@@ -22,8 +20,8 @@ actual class File actual constructor(
     }
 
     actual fun getName(): String {
-        return if (fileSeparator in pathname) {
-            pathname.split(fileSeparator).last(String::isNotBlank)
+        return if (filePathSeparator in pathname) {
+            pathname.split(filePathSeparator).last(String::isNotBlank)
         } else {
             pathname
         }
@@ -104,7 +102,7 @@ actual class File actual constructor(
     }
 
     actual fun getAbsolutePath(): String {
-        return if (pathname.startsWith(fileSeparator) || pathname.getOrNull(1) == ':') {
+        return if (pathname.startsWith(filePathSeparator) || pathname.getOrNull(1) == ':') {
             pathname
         } else {
             memScoped {
@@ -119,7 +117,7 @@ actual class File actual constructor(
                     retryBuf.toKString()
                 } else {
                     buf.toKString()
-                } + fileSeparator + pathname
+                } + filePathSeparator + pathname
             }
         }
     }
@@ -169,10 +167,10 @@ actual class File actual constructor(
         if (isFile()) return emptyArray()
 
         val findData = alloc<WIN32_FIND_DATAA>()
-        val searchPath = if (pathname.endsWith(fileSeparator)) {
+        val searchPath = if (pathname.endsWith(filePathSeparator)) {
             pathname
         } else {
-            "$pathname${fileSeparator}"
+            "$pathname${filePathSeparator}"
         } + "*"
         val find = FindFirstFileA(searchPath, findData.ptr)
         if (find == INVALID_HANDLE_VALUE) {
@@ -197,8 +195,8 @@ actual class File actual constructor(
     actual fun listFiles(): Array<File> {
         if (isFile()) return emptyArray()
         val thisPath = getAbsolutePath().let { path ->
-            if (!path.endsWith(fileSeparator)) {
-                path + fileSeparator
+            if (!path.endsWith(filePathSeparator)) {
+                path + filePathSeparator
             } else path
         }
         return list()
@@ -267,6 +265,8 @@ actual class File actual constructor(
             "}"
     }
 }
+
+actual val filePathSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
 
 actual val File.mimeType: String
     get() = ""

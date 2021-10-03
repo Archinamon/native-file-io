@@ -8,6 +8,8 @@ import kotlin.io.writeBytes as kWriteBytes
 
 actual typealias File = java.io.File
 
+actual val filePathSeparator by lazy { File.separatorChar }
+
 actual val File.mimeType: String
     get() = URLConnection.guessContentTypeFromName(name)
 
