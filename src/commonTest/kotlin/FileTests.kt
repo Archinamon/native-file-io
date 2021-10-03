@@ -81,4 +81,51 @@ class FileTests {
         assertEquals("gradle-wrapper.properties", listedFileNames[1])
         assertEquals("gradle-wrapper.properties", listedFiles[1].getName())
     }
+
+    @Test
+    fun testFileCopyMethod() {
+        val testFile = File("gradle/wrapper/gradle-wrapper.properties")
+        val testDestFolder = File("build/testCopyFolder")
+        val testDestFile = File("build/testCopyFolder/gradle-wrapper.properties")
+
+        assertTrue(testFile.exists(), "file have to exist")
+        assertFalse(testDestFolder.exists(), "folder shouldn't be created yet")
+
+        testDestFolder.mkdirs()
+        assertTrue(testDestFolder.exists(), "now folder have to exists")
+
+        assertFalse(testDestFile.exists(), "file should not exists yet")
+        testFile.copyTo(testDestFile, overwrite = false)
+        assertTrue(testDestFile.exists(), "file have to exist after coping")
+
+        assertTrue(testDestFile.delete(), "failed to cleanup test file")
+        assertTrue(testDestFolder.delete(), "failed to cleanup directory")
+    }
+
+    @Test
+    fun testFileMoveMethod() {
+        val testFolder = File("build/testMoveFolder")
+        val testDestFolder = File("build/testMoveFolder2")
+        val testFile = File("build/testMoveFolder/test_move_file.properties")
+        val testDestFile = File("build/testMoveFolder2/test_move_file.properties")
+
+        assertFalse(testFile.exists(), "file have not to exist")
+        assertFalse(testFolder.exists(), "folder shouldn't be created yet")
+        assertFalse(testDestFolder.exists(), "folder shouldn't be created yet")
+
+        assertTrue(testFolder.mkdirs() && testFolder.exists(), "now folder1 have to exists")
+        assertTrue(testDestFolder.mkdirs() && testDestFolder.exists(), "now folder2 have to exists")
+
+        assertTrue(testFile.createNewFile(), "file should be created")
+        testFile.writeText("moving=true")
+
+        testFile.moveTo(testDestFile, overwrite = false)
+        assertTrue(testDestFile.exists(), "file have to exist after coping")
+        assertEquals("moving=true", testDestFile.readText(), "moved file should have the same content")
+        assertFalse(testFile.exists(), "file should not exists on previous place after moving")
+
+        assertTrue(testFolder.delete(), "failed to cleanup test file")
+        assertTrue(testDestFile.delete(), "failed to cleanup test file")
+        assertTrue(testDestFolder.delete(), "failed to cleanup directory")
+    }
 }
