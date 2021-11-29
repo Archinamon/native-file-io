@@ -27,6 +27,11 @@ expect class File(pathname: String) {
 
 expect val filePathSeparator: Char
 
+fun File.asParent(child: String): File {
+    val path = getAbsolutePath() + filePathSeparator + child
+    return File(path)
+}
+
 val File.nameWithoutExtension: String
     get() = getName().substringBeforeLast(".")
 
