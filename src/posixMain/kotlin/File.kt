@@ -224,6 +224,7 @@ internal expect fun readdir(dir: CPointer<out CPointed>): CPointer<dirent>?
 
 internal expect fun closedir(dir: CPointer<out CPointed>): Int
 
+@SharedImmutable
 actual val filePathSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
 
 //todo determine mimeType on file extension; see jdk mappings
