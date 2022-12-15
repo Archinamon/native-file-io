@@ -319,3 +319,20 @@ actual fun File.writeText(text: String) {
     writeBytes(text.encodeToByteArray(), GENERIC_WRITE)
 }
 
+actual fun File.createTempFile(prefix: String, suffix: String?): File {
+    return createTempFile(prefix, suffix, File(tempDirectory))
+}
+
+actual fun File.createTempFile(prefix: String, suffix: String?, dir: File): File {
+    val parent = dir.getAbsolutePath()
+    if (!dir.canWrite()) {
+        throw IllegalFileAccess(parent, "Can't create file in the directory")
+    }
+
+    if (prefix.length < 3) {
+        throw IllegalArgumentException("prefix should be at least 3 chars long, now — ${prefix.length}")
+    }
+
+    val end = suffix ?: tempFileType
+    return File("$parent/$prefix$end")
+}

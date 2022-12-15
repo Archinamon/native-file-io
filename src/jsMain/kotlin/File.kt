@@ -104,3 +104,16 @@ actual fun File.writeText(text: String) {
 actual fun File.writeBytes(bytes: ByteArray) {
     innerFile = JsFile(bytes.toTypedArray(), innerFile.name)
 }
+
+actual fun File.createTempFile(prefix: String, suffix: String?): File = createTempFile(prefix, suffix, File(tempDirectory))
+
+actual fun File.createTempFile(prefix: String, suffix: String?, dir: File): File {
+    if (prefix.length < 3) {
+        throw IllegalArgumentException("prefix should be at least 3 chars long, now — ${prefix.length}")
+    }
+
+    val parent = dir.getAbsolutePath()
+    val end = suffix ?: tempFileType
+
+    return File("$parent/$prefix$end")
+}
