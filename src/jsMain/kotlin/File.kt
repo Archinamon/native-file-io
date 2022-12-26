@@ -54,6 +54,10 @@ actual class File constructor(jsfile: JsFile) {
         return innerFile.name
     }
 
+    actual fun length(): Long {
+        return innerFile.size.toLong()
+    }
+
     actual fun exists(): Boolean {
         return !virtual
     }

@@ -74,6 +74,17 @@ actual class File actual constructor(
         } else pathname
     }
 
+    actual fun length(): Long {
+        memScoped {
+            val result = alloc<stat>()
+
+            stat(pathname, result.ptr)
+                .ensureUnixCallResult("stat") { ret -> ret == 0 }
+
+            return result.st_size
+        }
+    }
+
     actual fun lastModified(): Long = modified(this)
 
     actual fun mkdirs(): Boolean {

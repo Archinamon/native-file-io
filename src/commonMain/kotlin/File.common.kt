@@ -14,6 +14,7 @@ expect class File(pathname: String) {
     fun isDirectory(): Boolean
 
     fun getAbsolutePath(): String
+    fun length(): Long
 
     fun exists(): Boolean
     fun canRead(): Boolean
