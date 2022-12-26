@@ -97,6 +97,11 @@ actual fun File.appendText(text: String) {
     writeText(newData)
 }
 
+actual fun File.appendBytes(bytes: ByteArray) {
+    val newData = readBytes() + bytes
+    writeBytes(newData)
+}
+
 actual fun File.writeText(text: String) {
     innerFile = JsFile(text.encodeToByteArray().toTypedArray(), innerFile.name)
 }

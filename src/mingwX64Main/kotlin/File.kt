@@ -315,6 +315,10 @@ actual fun File.appendText(text: String) {
     writeBytes(text.encodeToByteArray(), FILE_APPEND_DATA)
 }
 
+actual fun File.appendBytes(bytes: ByteArray) {
+    writeBytes(bytes, FILE_APPEND_DATA)
+}
+
 actual fun File.writeText(text: String) {
     writeBytes(text.encodeToByteArray(), GENERIC_WRITE)
 }

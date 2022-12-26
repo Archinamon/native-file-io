@@ -49,6 +49,8 @@ expect fun File.readText(): String
 
 expect fun File.appendText(text: String)
 
+expect fun File.appendBytes(bytes: ByteArray)
+
 expect fun File.writeText(text: String)
 
 expect fun File.createTempFile(prefix: String, suffix: String? = null): File

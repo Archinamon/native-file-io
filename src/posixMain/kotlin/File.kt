@@ -262,6 +262,10 @@ actual fun File.appendText(text: String) {
     writeBytes(text.encodeToByteArray(), O_RDWR or O_APPEND, strlen(text))
 }
 
+actual fun File.appendBytes(bytes: ByteArray) {
+    writeBytes(bytes, O_RDWR or O_APPEND, bytes.size.convert())
+}
+
 actual fun File.writeText(text: String) {
     writeBytes(text.encodeToByteArray(), O_RDWR or O_CREAT, strlen(text))
 }
