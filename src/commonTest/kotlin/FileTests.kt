@@ -160,4 +160,23 @@ class FileTests {
 
         assertTrue(testDir.deleteRecursively(), "error while deleting all files in dir")
     }
+
+    @Test
+    fun testFileLengthAndAppendings() {
+        val testFile = Files.createTempFile("test")
+
+        val data = "testData"
+        testFile.writeText(data)
+
+        assertTrue(testFile.exists(), "file should exists")
+        assertEquals(data, testFile.readText())
+
+        val appendedData = "\nNew Text!"
+        testFile.appendBytes(appendedData.encodeToByteArray())
+
+        assertEquals(data + appendedData, testFile.readText())
+        assertEquals((data + appendedData).length.toLong(), testFile.length())
+
+        assertTrue(testFile.delete(), "delete file failed")
+    }
 }
