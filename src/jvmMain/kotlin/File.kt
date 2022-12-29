@@ -26,9 +26,3 @@ actual fun File.appendBytes(bytes: ByteArray) = kAppendBytes(bytes)
 actual fun File.appendText(text: String) = appendText(text, Charset.defaultCharset())
 
 actual fun File.writeText(text: String) = writeText(text, Charset.defaultCharset())
-
-actual fun File.createTempFile(prefix: String, suffix: String?): File =
-    jvmFile.createTempFile(prefix, suffix)
-
-actual fun File.createTempFile(prefix: String, suffix: String?, dir: File): File =
-    jvmFile.createTempFile(prefix, suffix, dir)

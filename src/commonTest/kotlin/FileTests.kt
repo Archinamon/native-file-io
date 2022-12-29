@@ -131,4 +131,33 @@ class FileTests {
         assertTrue(testDestFile.delete(), "failed to cleanup test file")
         assertTrue(testDestFolder.delete(), "failed to cleanup directory")
     }
+
+    @Test
+    fun testCreateTempFileAndDelete() {
+        val testFile = Files.createTempFile("test")
+
+        assertEquals("/tmp/test.tmp", testFile.getAbsolutePath())
+        assertTrue(testFile.exists(), "file should exist")
+        assertTrue(testFile.canRead(), "file should be readable")
+        assertTrue(testFile.canWrite(), "file should be writable")
+        assertTrue(testFile.isFile(), "file should be considered a file")
+        assertFalse(testFile.isDirectory(), "file should not be considered a directory")
+        assertTrue(testFile.delete(), "delete file failed")
+    }
+
+    @Test
+    fun testCreateTempFileWithinCustomDirAndDelete() {
+        val testDir = File("/tmp/testdir").apply { mkdirs() }
+        val testFile = Files.createTempFile(prefix = "test", suffix = "all.t", dir = testDir)
+
+        assertEquals("/tmp/testdir/testall.t", testFile.getAbsolutePath())
+        assertTrue(testFile.exists(), "file should exist")
+        assertTrue(testFile.canRead(), "file should be readable")
+        assertTrue(testFile.canWrite(), "file should be writable")
+        assertTrue(testFile.isFile(), "file should be considered a file")
+        assertFalse(testFile.isDirectory(), "file should not be considered a directory")
+        assertTrue(testFile.delete(), "delete file failed")
+
+        assertTrue(testDir.deleteRecursively(), "error while deleting all files in dir")
+    }
 }

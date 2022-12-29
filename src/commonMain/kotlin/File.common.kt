@@ -28,12 +28,6 @@ expect class File(pathname: String) {
 
 expect val filePathSeparator: Char
 
-val File.tempDirectory: String
-    get() = "/tmp"
-
-val File.tempFileType: String
-    get() = ".tmp"
-
 fun File.asParent(child: String): File {
     val path = getAbsolutePath() + filePathSeparator + child
     return File(path)
@@ -53,10 +47,6 @@ expect fun File.appendText(text: String)
 expect fun File.appendBytes(bytes: ByteArray)
 
 expect fun File.writeText(text: String)
-
-expect fun File.createTempFile(prefix: String, suffix: String? = null): File
-
-expect fun File.createTempFile(prefix: String, suffix: String? = null, dir: File): File
 
 fun File.deleteRecursively(): Boolean = walkBottomUp()
     .fold(initial = true) { res, it ->
