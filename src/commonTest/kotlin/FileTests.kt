@@ -136,7 +136,11 @@ class FileTests {
     fun testCreateTempFileAndDelete() {
         val testFile = Files.createTempFile("test")
 
-        assertContains(testFile.getAbsolutePath(), "/tmp/test.tmp", message = "different path: ${testFile.getAbsolutePath()}")
+        assertContains(
+            testFile.getAbsolutePath(),
+            "/tmp/test.tmp".replace('/', filePathSeparator),
+            message = "different path: ${testFile.getAbsolutePath()}"
+        )
         assertTrue(testFile.exists(), "file should exist")
         assertTrue(testFile.canRead(), "file should be readable")
         assertTrue(testFile.canWrite(), "file should be writable")
@@ -150,7 +154,11 @@ class FileTests {
         val testDir = File("/tmp/testdir").apply { mkdirs() }
         val testFile = Files.createTempFile(prefix = "test", suffix = "all.t", dir = testDir)
 
-        assertContains(testFile.getAbsolutePath(), "/tmp/testdir/testall.t", message = "different path: ${testFile.getAbsolutePath()}")
+        assertContains(
+            testFile.getAbsolutePath(),
+            "/tmp/testdir/testall.t".replace('/', filePathSeparator),
+            message = "different path: ${testFile.getAbsolutePath()}"
+        )
         assertTrue(testFile.exists(), "file should exist")
         assertTrue(testFile.canRead(), "file should be readable")
         assertTrue(testFile.canWrite(), "file should be writable")
