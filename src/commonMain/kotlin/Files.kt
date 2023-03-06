@@ -9,6 +9,10 @@ object Files {
     }
 
     fun createTempFile(prefix: String, suffix: String? = null, dir: File): File {
+        if (platform() == Platform.Windows) {
+            throw UnsupportedOperationException("Do not supported on mingw yet, create tmp files/dirs manually!")
+        }
+
         val parent = dir.getAbsolutePath()
         if (!dir.exists()) {
             dir.mkdirs()

@@ -134,6 +134,10 @@ class FileTests {
 
     @Test
     fun testCreateTempFileAndDelete() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFile = Files.createTempFile("test")
 
         assertContains(
@@ -151,6 +155,10 @@ class FileTests {
 
     @Test
     fun testCreateTempFileWithinCustomDirAndDelete() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testDir = File("/tmp/testdir").apply { mkdirs() }
         val testFile = Files.createTempFile(prefix = "test", suffix = "all.t", dir = testDir)
 
@@ -171,8 +179,11 @@ class FileTests {
 
     @Test
     fun testFileLengthAndAppendings() {
-        val testFile = Files.createTempFile("test")
+        if (platform() == Platform.Windows) {
+            return
+        }
 
+        val testFile = Files.createTempFile("test")
         val data = "testData"
         testFile.writeText(data)
 
