@@ -291,7 +291,7 @@ actual class File actual constructor(pathname: String) {
     }
 }
 
-actual val filePathSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
+actual val filePathSeparator by lazy { if (platform() == Platform.Windows) '\\' else '/' }
 
 actual val File.mimeType: String
     get() = ""
