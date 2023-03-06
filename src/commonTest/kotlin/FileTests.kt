@@ -131,4 +131,71 @@ class FileTests {
         assertTrue(testDestFile.delete(), "failed to cleanup test file")
         assertTrue(testDestFolder.delete(), "failed to cleanup directory")
     }
+
+    @Test
+    fun testCreateTempFileAndDelete() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
+        val testFile = Files.createTempFile("test")
+
+        assertContains(
+            testFile.getAbsolutePath(),
+            "/tmp/test.tmp".replace('/', filePathSeparator),
+            message = "different path: ${testFile.getAbsolutePath()}"
+        )
+        assertTrue(testFile.exists(), "file should exist")
+        assertTrue(testFile.canRead(), "file should be readable")
+        assertTrue(testFile.canWrite(), "file should be writable")
+        assertTrue(testFile.isFile(), "file should be considered a file")
+        assertFalse(testFile.isDirectory(), "file should not be considered a directory")
+        assertTrue(testFile.delete(), "delete file failed")
+    }
+
+    @Test
+    fun testCreateTempFileWithinCustomDirAndDelete() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
+        val testDir = File("/tmp/testdir").apply { mkdirs() }
+        val testFile = Files.createTempFile(prefix = "test", suffix = "all.t", dir = testDir)
+
+        assertContains(
+            testFile.getAbsolutePath(),
+            "/tmp/testdir/testall.t".replace('/', filePathSeparator),
+            message = "different path: ${testFile.getAbsolutePath()}"
+        )
+        assertTrue(testFile.exists(), "file should exist")
+        assertTrue(testFile.canRead(), "file should be readable")
+        assertTrue(testFile.canWrite(), "file should be writable")
+        assertTrue(testFile.isFile(), "file should be considered a file")
+        assertFalse(testFile.isDirectory(), "file should not be considered a directory")
+        assertTrue(testFile.delete(), "delete file failed")
+
+        assertTrue(testDir.deleteRecursively(), "error while deleting all files in dir")
+    }
+
+    @Test
+    fun testFileLengthAndAppendings() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
+        val testFile = Files.createTempFile("test")
+        val data = "testData"
+        testFile.writeText(data)
+
+        assertTrue(testFile.exists(), "file should exists")
+        assertEquals(data, testFile.readText())
+
+        val appendedData = "\nNew Text!"
+        testFile.appendBytes(appendedData.encodeToByteArray())
+
+        assertEquals(data + appendedData, testFile.readText())
+        assertEquals((data + appendedData).length.toLong(), testFile.length())
+
+        assertTrue(testFile.delete(), "delete file failed")
+    }
 }

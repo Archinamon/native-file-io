@@ -14,6 +14,7 @@ expect class File(pathname: String) {
     fun isDirectory(): Boolean
 
     fun getAbsolutePath(): String
+    fun length(): Long
 
     fun exists(): Boolean
     fun canRead(): Boolean
@@ -42,6 +43,8 @@ expect fun File.readBytes(): ByteArray
 expect fun File.readText(): String
 
 expect fun File.appendText(text: String)
+
+expect fun File.appendBytes(bytes: ByteArray)
 
 expect fun File.writeText(text: String)
 

@@ -54,6 +54,10 @@ actual class File constructor(jsfile: JsFile) {
         return innerFile.name
     }
 
+    actual fun length(): Long {
+        return innerFile.size.toLong()
+    }
+
     actual fun exists(): Boolean {
         return !virtual
     }
@@ -95,6 +99,11 @@ actual fun File.readText(): String {
 actual fun File.appendText(text: String) {
     val newData = readText() + text
     writeText(newData)
+}
+
+actual fun File.appendBytes(bytes: ByteArray) {
+    val newData = readBytes() + bytes
+    writeBytes(newData)
 }
 
 actual fun File.writeText(text: String) {

@@ -5,7 +5,7 @@ import platform.windows.*
 
 // Difference between January 1, 1601 and January 1, 1970 in millis
 private const val EPOCH_DIFF = 11644473600000
-
+private const val ERR_SIZE = -1L
 
 actual class File actual constructor(pathname: String) {
 
@@ -122,6 +122,32 @@ actual class File actual constructor(pathname: String) {
         }
     }
 
+    actual fun length(): Long = memScoped {
+        val handle = CreateFileA(
+            getAbsolutePath(),
+            GENERIC_READ,
+            FILE_SHARE_READ,
+            null,
+            OPEN_EXISTING,
+            0,
+            null
+        )
+        if (handle == INVALID_HANDLE_VALUE) return ERR_SIZE
+
+        return try {
+            val fs = alloc<_LARGE_INTEGER>()
+            if (GetFileSizeEx(handle, fs.ptr) == TRUE) {
+                val size = (fs.HighPart.toUInt() shl 32) or fs.LowPart
+
+                size.toLong()
+            } else {
+                ERR_SIZE
+            }
+        } finally {
+            CloseHandle(handle)
+        }
+    }
+
     actual fun exists(): Boolean {
         return GetFileAttributesA(pathname) != INVALID_FILE_ATTRIBUTES
     }
@@ -136,7 +162,6 @@ actual class File actual constructor(pathname: String) {
             0,
             null
         )
-
 
         return try {
             handle != INVALID_HANDLE_VALUE
@@ -266,7 +291,7 @@ actual class File actual constructor(pathname: String) {
     }
 }
 
-actual val filePathSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
+actual val filePathSeparator by lazy { if (platform() == Platform.Windows) '\\' else '/' }
 
 actual val File.mimeType: String
     get() = ""
@@ -315,7 +340,10 @@ actual fun File.appendText(text: String) {
     writeBytes(text.encodeToByteArray(), FILE_APPEND_DATA)
 }
 
+actual fun File.appendBytes(bytes: ByteArray) {
+    writeBytes(bytes, FILE_APPEND_DATA)
+}
+
 actual fun File.writeText(text: String) {
     writeBytes(text.encodeToByteArray(), GENERIC_WRITE)
 }
-

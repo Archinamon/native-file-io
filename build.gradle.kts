@@ -1,12 +1,12 @@
 plugins {
-    kotlin("multiplatform") version "1.5.10"
+    kotlin("multiplatform") version "1.7.10"
     id("org.jetbrains.dokka") version "1.4.32"
     id("maven-publish")
     id("signing")
 }
 
 group = "me.archinamon"
-version = "1.3.5"
+version = "1.3.6"
 
 val isRunningInIde: Boolean = System.getProperty("idea.active")
     ?.toBoolean() == true

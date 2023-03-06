@@ -74,6 +74,17 @@ actual class File actual constructor(
         } else pathname
     }
 
+    actual fun length(): Long {
+        memScoped {
+            val result = alloc<stat>()
+
+            stat(pathname, result.ptr)
+                .ensureUnixCallResult("stat") { ret -> ret == 0 }
+
+            return result.st_size
+        }
+    }
+
     actual fun lastModified(): Long = modified(this)
 
     actual fun mkdirs(): Boolean {
@@ -225,7 +236,7 @@ internal expect fun readdir(dir: CPointer<out CPointed>): CPointer<dirent>?
 internal expect fun closedir(dir: CPointer<out CPointed>): Int
 
 @SharedImmutable
-actual val filePathSeparator by lazy { if (Platform.osFamily == OsFamily.WINDOWS) '\\' else '/' }
+actual val filePathSeparator by lazy { if (platform() == Platform.Windows) '\\' else '/' }
 
 //todo determine mimeType on file extension; see jdk mappings
 actual val File.mimeType: String
@@ -260,6 +271,10 @@ actual fun File.readText(): String {
 
 actual fun File.appendText(text: String) {
     writeBytes(text.encodeToByteArray(), O_RDWR or O_APPEND, strlen(text))
+}
+
+actual fun File.appendBytes(bytes: ByteArray) {
+    writeBytes(bytes, O_RDWR or O_APPEND, bytes.size.convert())
 }
 
 actual fun File.writeText(text: String) {
