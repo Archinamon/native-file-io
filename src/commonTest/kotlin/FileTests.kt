@@ -4,8 +4,6 @@ import kotlin.test.*
 
 class FileTests {
 
-    private val localSeparator = '/'
-
     @Test
     fun testNonexistentRootFile() {
         val testFile = File("testNonexistentRootFile.txt")
@@ -22,7 +20,6 @@ class FileTests {
     @Test
     fun testExistentRootFile() {
         val testFile = File("testFileRoot/testExistentRootFile.txt")
-        println(testFile.getAbsolutePath())
 
         assertFalse(testFile.exists(), "file should not exist")
         assertFalse(testFile.getParentFile()?.exists() == true, "file should not have parent file")
