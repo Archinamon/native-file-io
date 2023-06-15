@@ -50,7 +50,13 @@ actual class File actual constructor(
     private val modeRewrite = "w"
 
     actual fun getParent(): String? {
-        return if (exists()) getAbsolutePath().substringBeforeLast(filePathSeparator) else null
+        val path = getAbsolutePath()
+        val idx = path.lastIndexOf(filePathSeparator)
+        if (idx <= 0 || idx > path.length) {
+            return null
+        }
+
+        return path.substringBeforeLast(filePathSeparator)
     }
 
     actual fun getParentFile(): File? {
@@ -64,6 +70,8 @@ actual class File actual constructor(
             pathname
         }
     }
+
+    actual fun getPath(): String = pathname
 
     actual fun getAbsolutePath(): String {
         return if (!pathname.startsWith(filePathSeparator)) {
