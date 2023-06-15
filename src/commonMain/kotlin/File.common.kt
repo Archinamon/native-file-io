@@ -7,12 +7,14 @@ expect class File(pathname: String) {
     fun getName(): String
 
     fun lastModified(): Long
+    fun mkdir(): Boolean
     fun mkdirs(): Boolean
     fun createNewFile(): Boolean
 
     fun isFile(): Boolean
     fun isDirectory(): Boolean
 
+    fun getPath(): String
     fun getAbsolutePath(): String
     fun length(): Long
 
