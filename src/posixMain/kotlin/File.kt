@@ -109,17 +109,31 @@ actual class File actual constructor(
 
     actual fun lastModified(): Long = modified(this)
 
-    actual fun mkdirs(): Boolean {
-        if (exists()) return false
+    actual fun mkdir(): Boolean {
+        if (getParentFile()?.exists() != true) {
+            return false
+        }
 
-        if (getParentFile()?.exists() == false) {
-            getParentFile()?.mkdirs()
+        if (getParentFile()?.canWrite() != true) {
+            throw IllegalFileAccess(pathname, "Directory not accessible for write operations")
         }
 
         mkdir(pathname, (S_IRWXU or S_IRWXG or S_IRWXO).convert())
             .ensureUnixCallResult("mkdir") { ret -> ret == 0 }
 
-        return true
+        return exists()
+    }
+
+    actual fun mkdirs(): Boolean {
+        if (exists()) {
+            return false
+        }
+
+        if (mkdir()) {
+            return true
+        }
+
+        return (getParentFile()?.mkdirs() == true || getParentFile()?.exists() == true) && mkdir()
     }
 
     actual fun createNewFile(): Boolean {
