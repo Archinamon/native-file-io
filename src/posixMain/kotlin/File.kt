@@ -18,6 +18,7 @@ import platform.posix.NULL
 import platform.posix.O_APPEND
 import platform.posix.O_CREAT
 import platform.posix.O_RDWR
+import platform.posix.PATH_MAX
 import platform.posix.R_OK
 import platform.posix.SEEK_END
 import platform.posix.SEEK_SET
@@ -36,6 +37,7 @@ import platform.posix.fseek
 import platform.posix.ftell
 import platform.posix.fwrite
 import platform.posix.getcwd
+import platform.posix.realpath
 import platform.posix.rmdir
 import platform.posix.stat
 import platform.posix.strlen
@@ -74,12 +76,24 @@ actual class File actual constructor(
     actual fun getPath(): String = pathname
 
     actual fun getAbsolutePath(): String {
-        return if (!pathname.startsWith(filePathSeparator)) {
-            memScoped {
+        return memScoped {
+            val path = if (pathname.first() != filePathSeparator || pathname.first() == '.') {
                 getcwd(allocArray(FILENAME_MAX), FILENAME_MAX.convert())
                     ?.toKString() + filePathSeparator + pathname
+            } else {
+                pathname
             }
-        } else pathname
+
+            if (".." !in path && "./" !in path) {
+                return path
+            }
+
+            ByteArray(PATH_MAX).usePinned { absolutePath ->
+                realpath(path, absolutePath.addressOf(0))
+
+                absolutePath.get().toKString()
+            }
+        }
     }
 
     actual fun length(): Long {
@@ -194,11 +208,11 @@ actual class File actual constructor(
     }
 
     actual fun canRead(): Boolean {
-        return access(getAbsolutePath(), R_OK) != -1
+        return access(pathname, R_OK) != -1
     }
 
     actual fun canWrite(): Boolean {
-        return access(getAbsolutePath(), W_OK) != -1
+        return access(pathname, W_OK) != -1
     }
 
     internal fun writeBytes(bytes: ByteArray, mode: Int, size: ULong = ULong.MAX_VALUE, elemSize: ULong = 1U) {
