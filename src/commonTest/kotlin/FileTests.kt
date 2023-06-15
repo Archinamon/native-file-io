@@ -17,9 +17,9 @@ class FileTests {
             assertNull(testFile.getParentFile(), "file should not have parent file")
         }
 
-        if (platform().isPosix()) {
-            assertEquals(testFile.getParent(), File("./").getAbsolutePath(), "as parent should current dir")
-            assertEquals(testFile.getParentFile()?.getAbsolutePath(), File("./").getAbsolutePath(), "as parent should current dir")
+        if (platform().isPosix()) { // in posix we always resolve relative path via `realpath` syscall
+            assertEquals(testFile.getParent(), File("./").getAbsolutePath(), "as parent should be current dir")
+            assertEquals(testFile.getParentFile()?.getAbsolutePath(), File("./").getAbsolutePath(), "as parent should be current dir")
         }
 
         assertEquals("testNonexistentRootFile", testFile.nameWithoutExtension)
