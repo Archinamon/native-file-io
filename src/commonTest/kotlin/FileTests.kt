@@ -11,8 +11,16 @@ class FileTests {
         assertFalse(testFile.exists(), "file should not exist")
         assertFalse(testFile.isDirectory(), "file should not be directory")
         assertFalse(testFile.isFile(), "file should not be file")
-        assertNull(testFile.getParent(), "file should not have parent")
-        assertNull(testFile.getParentFile(), "file should not have parent file")
+
+        if (platform() == Platform.JVM) {
+            assertNull(testFile.getParent(), "file should not have parent")
+            assertNull(testFile.getParentFile(), "file should not have parent file")
+        }
+
+        if (platform().isPosix()) {
+            assertEquals(testFile.getParent(), File("./").getAbsolutePath(), "as parent should current dir")
+            assertEquals(testFile.getParentFile()?.getAbsolutePath(), File("./").getAbsolutePath(), "as parent should current dir")
+        }
 
         assertEquals("testNonexistentRootFile", testFile.nameWithoutExtension)
     }
