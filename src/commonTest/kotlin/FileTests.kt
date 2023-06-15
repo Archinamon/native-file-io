@@ -203,4 +203,30 @@ class FileTests {
 
         assertTrue(testFile.delete(), "delete file failed")
     }
+
+    @Test
+    fun testFileRealPathIfRelativeLinks__posixOnly() {
+        if (!platform().isPosix()) {
+            return
+        }
+
+        val testDir = File("/tmp/build")
+        val testFile = Files.createTempFile(prefix = "../test", suffix = ".txt", dir = testDir)
+        assertEquals("/private/tmp/test.txt", testFile.getAbsolutePath()) // 'cause /tmp is a symlink for /private/tmp
+        assertTrue(testFile.delete(), "delete file failed")
+        assertTrue(testDir.delete(), "delete test folder failed")
+    }
+
+    @Test
+    fun testFileRealPathIfRelativeLinks__jvmOnly() {
+        if (platform() != Platform.JVM) {
+            return
+        }
+
+        val testDir = File("/tmp/build")
+        val testFile = Files.createTempFile(prefix = "../test", suffix = ".txt", dir = testDir)
+        assertEquals("/tmp/build/../test.txt", testFile.getAbsolutePath()) // lazy canonicalization in jvm
+        assertTrue(testFile.delete(), "delete file failed")
+        assertTrue(testDir.delete(), "delete test folder failed")
+    }
 }
