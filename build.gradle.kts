@@ -26,8 +26,15 @@ kotlin {
     linuxX64()
 
     // darwin macos code
-    macosX64 {
+    macosX64() {
+        if (testApp?.toBoolean() == true) {
+            binaries {
+                executable()
+            }
+        }
+    }
 
+    macosArm64 {
         if (testApp?.toBoolean() == true) {
             binaries {
                 executable()
@@ -46,6 +53,12 @@ kotlin {
         }
         val posixMain by creating {
             dependsOn(commonMain)
+        }
+        val macosArm64Main by getting {
+            dependsOn(posixMain)
+            if (testApp?.toBoolean() == true) {
+                kotlin.srcDirs("src/macosX64Runner/kotlin")
+            }
         }
         val macosX64Main by getting {
             dependsOn(posixMain)
