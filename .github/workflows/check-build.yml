@@ -40,7 +40,7 @@ jobs:
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: macosX64MainKlibrary macosArm64MainKlibrary -s -i
-        if: ${{ matrix.os == 'macos-latest' && runner.arch == 'ARM64' }}
+        if: ${{ matrix.os == 'macos-latest' }}
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: mingwX64MainKlibrary -s -i
