@@ -210,9 +210,11 @@ class FileTests {
             return
         }
 
+        val symlinkPrefix = if (platform() == Platform.Macos) "/private" else ""
+
         val testDir = File("/tmp/build")
         val testFile = Files.createTempFile(prefix = "../test", suffix = ".txt", dir = testDir)
-        assertEquals("/private/tmp/test.txt", testFile.getAbsolutePath()) // 'cause /tmp is a symlink for /private/tmp
+        assertEquals("$symlinkPrefix/tmp/test.txt", testFile.getAbsolutePath()) // 'cause /tmp is a symlink for /private/tmp
         assertTrue(testFile.delete(), "delete file failed")
         assertTrue(testDir.delete(), "delete test folder failed")
     }
