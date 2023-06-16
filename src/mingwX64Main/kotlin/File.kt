@@ -59,14 +59,28 @@ actual class File actual constructor(pathname: String) {
         }
     }
 
-    actual fun mkdirs(): Boolean {
-        if (exists()) return false
+    actual fun mkdir(): Boolean {
+        if (getParentFile()?.exists() != true) {
+            return false
+        }
 
-        if (getParentFile()?.exists() == false) {
-            getParentFile()?.mkdirs()
+        if (getParentFile()?.canWrite() != true) {
+            throw IllegalFileAccess(pathname, "Directory not accessible for write operations")
         }
 
         return SHCreateDirectoryExA(null, getAbsolutePath(), null) == ERROR_SUCCESS
+    }
+
+    actual fun mkdirs(): Boolean {
+        if (exists()) {
+            return false
+        }
+
+        if (mkdir()) {
+            return true
+        }
+
+        return (getParentFile()?.mkdirs() == true || getParentFile()?.exists() == true) && mkdir()
     }
 
     actual fun createNewFile(): Boolean {
@@ -99,6 +113,10 @@ actual class File actual constructor(pathname: String) {
             attrs != INVALID_FILE_ATTRIBUTES &&
                 (attrs and FILE_ATTRIBUTE_DIRECTORY.toUInt() != 0u)
         }
+    }
+
+    actual fun getPath(): String {
+        return pathname
     }
 
     actual fun getAbsolutePath(): String {
