@@ -57,13 +57,13 @@ kotlin {
         val macosArm64Main by getting {
             dependsOn(posixMain)
             if (testApp?.toBoolean() == true) {
-                kotlin.srcDirs("src/macosX64Runner/kotlin")
+                kotlin.srcDirs("src/macosRunner/kotlin")
             }
         }
         val macosX64Main by getting {
             dependsOn(posixMain)
             if (testApp?.toBoolean() == true) {
-                kotlin.srcDirs("src/macosX64Runner/kotlin")
+                kotlin.srcDirs("src/macosRunner/kotlin")
             }
         }
         val linuxX64Main by getting {
