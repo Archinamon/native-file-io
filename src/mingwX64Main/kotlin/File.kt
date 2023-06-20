@@ -68,7 +68,7 @@ actual class File actual constructor(pathname: String) {
             throw IllegalFileAccess(pathname, "Directory not accessible for write operations")
         }
 
-        return SHCreateDirectoryExA(null, getAbsolutePath(), null) == ERROR_SUCCESS
+        return SHCreateDirectoryExA(null, pathname, null) == ERROR_SUCCESS
     }
 
     actual fun mkdirs(): Boolean {
