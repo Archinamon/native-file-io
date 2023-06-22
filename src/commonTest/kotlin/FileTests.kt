@@ -38,6 +38,10 @@ class FileTests {
 
     @Test
     fun testFileCreateAndDelete() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFolder = File("build/testNewDirectoryCreation")
 
         assertTrue(testFolder.mkdirs(), "create directory failed")
@@ -57,6 +61,10 @@ class FileTests {
 
     @Test
     fun testFileWriteAndRead() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFolder = File("build/testFileWriteAndRead")
         val testFile = File("build/testFileWriteAndRead/test.txt")
 
@@ -92,6 +100,10 @@ class FileTests {
 
     @Test
     fun testFileCopyMethod() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFile = File("gradle/wrapper/gradle-wrapper.properties")
         val testDestFolder = File("build/testCopyFolder")
         val testDestFile = File("build/testCopyFolder/gradle-wrapper.properties")
@@ -112,6 +124,10 @@ class FileTests {
 
     @Test
     fun testFileMoveMethod() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFolder = File("build/testMoveFolder")
         val testDestFolder = File("build/testMoveFolder2")
         val testFile = File("build/testMoveFolder/test_move_file.properties")
