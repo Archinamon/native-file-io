@@ -60,23 +60,26 @@ actual class File actual constructor(pathname: String) {
     }
 
     actual fun mkdir(): Boolean {
+        println("parentfile exists: ${getParentFile()?.exists()}")
         if (getParentFile()?.exists() != true) {
             return false
         }
 
+        println("parentfile canwrite: ${getParentFile()?.canWrite()}")
         if (getParentFile()?.canWrite() != true) {
-            throw IllegalFileAccess(pathname, "Directory not accessible for write operations")
+            throw IllegalFileAccess(getAbsolutePath(), "Directory not accessible for write operations")
         }
 
-        return SHCreateDirectoryExA(null, pathname, null) == ERROR_SUCCESS
+        return SHCreateDirectoryExA(null, getAbsolutePath(), null) == ERROR_SUCCESS
     }
 
     actual fun mkdirs(): Boolean {
+        println("mkdirs exists: ${exists()}")
         if (exists()) {
             return false
         }
 
-        if (mkdir()) {
+        if (mkdir().apply { println("parentfile canwrite: $this") }) {
             return true
         }
 
