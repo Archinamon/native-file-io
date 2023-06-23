@@ -39,7 +39,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - uses: eskatos/gradle-command-action@v1
         with:
-          arguments: macosX64MainKlibrary -s -i
+          arguments: macosX64MainKlibrary macosArm64MainKlibrary -s -i
         if: ${{ matrix.os == 'macos-latest' }}
       - uses: eskatos/gradle-command-action@v1
         with:

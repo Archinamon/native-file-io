@@ -18,6 +18,7 @@ import platform.posix.NULL
 import platform.posix.O_APPEND
 import platform.posix.O_CREAT
 import platform.posix.O_RDWR
+import platform.posix.PATH_MAX
 import platform.posix.R_OK
 import platform.posix.SEEK_END
 import platform.posix.SEEK_SET
@@ -36,6 +37,7 @@ import platform.posix.fseek
 import platform.posix.ftell
 import platform.posix.fwrite
 import platform.posix.getcwd
+import platform.posix.realpath
 import platform.posix.rmdir
 import platform.posix.stat
 import platform.posix.strlen
@@ -50,7 +52,13 @@ actual class File actual constructor(
     private val modeRewrite = "w"
 
     actual fun getParent(): String? {
-        return if (exists()) getAbsolutePath().substringBeforeLast(filePathSeparator) else null
+        val path = getAbsolutePath()
+        val idx = path.lastIndexOf(filePathSeparator)
+        if (idx <= 0 || idx > path.length) {
+            return null
+        }
+
+        return path.substringBeforeLast(filePathSeparator)
     }
 
     actual fun getParentFile(): File? {
@@ -65,13 +73,27 @@ actual class File actual constructor(
         }
     }
 
+    actual fun getPath(): String = pathname
+
     actual fun getAbsolutePath(): String {
-        return if (!pathname.startsWith(filePathSeparator)) {
-            memScoped {
+        return memScoped {
+            val path = if (pathname.first() != filePathSeparator || pathname.first() == '.') {
                 getcwd(allocArray(FILENAME_MAX), FILENAME_MAX.convert())
                     ?.toKString() + filePathSeparator + pathname
+            } else {
+                pathname
             }
-        } else pathname
+
+            if (".." !in path && "./" !in path) {
+                return path
+            }
+
+            ByteArray(PATH_MAX).usePinned { absolutePath ->
+                realpath(path, absolutePath.addressOf(0))
+
+                absolutePath.get().toKString()
+            }
+        }
     }
 
     actual fun length(): Long {
@@ -87,17 +109,31 @@ actual class File actual constructor(
 
     actual fun lastModified(): Long = modified(this)
 
-    actual fun mkdirs(): Boolean {
-        if (exists()) return false
+    actual fun mkdir(): Boolean {
+        if (getParentFile()?.exists() != true) {
+            return false
+        }
 
-        if (getParentFile()?.exists() == false) {
-            getParentFile()?.mkdirs()
+        if (getParentFile()?.canWrite() != true) {
+            throw IllegalFileAccess(pathname, "Directory not accessible for write operations")
         }
 
         mkdir(pathname, (S_IRWXU or S_IRWXG or S_IRWXO).convert())
             .ensureUnixCallResult("mkdir") { ret -> ret == 0 }
 
-        return true
+        return exists()
+    }
+
+    actual fun mkdirs(): Boolean {
+        if (exists()) {
+            return false
+        }
+
+        if (mkdir()) {
+            return true
+        }
+
+        return (getParentFile()?.mkdirs() == true || getParentFile()?.exists() == true) && mkdir()
     }
 
     actual fun createNewFile(): Boolean {
@@ -186,14 +222,18 @@ actual class File actual constructor(
     }
 
     actual fun canRead(): Boolean {
-        return access(getAbsolutePath(), R_OK) != -1
+        return access(pathname, R_OK) != -1
     }
 
     actual fun canWrite(): Boolean {
-        return access(getAbsolutePath(), W_OK) != -1
+        return access(pathname, W_OK) != -1
     }
 
     internal fun writeBytes(bytes: ByteArray, mode: Int, size: ULong = ULong.MAX_VALUE, elemSize: ULong = 1U) {
+        if (!exists()) {
+            throw NoSuchElementException("File or directory not exists")
+        }
+
         val fd = fopen(getAbsolutePath(), if (mode and O_APPEND == O_APPEND) modeAppend else modeRewrite)
         try {
             memScoped {
@@ -243,6 +283,14 @@ actual val File.mimeType: String
     get() = ""
 
 actual fun File.readBytes(): ByteArray {
+    if (!exists()) {
+        throw NoSuchElementException("File or directory not exists")
+    }
+
+    if (length() == 0L) {
+        return byteArrayOf(0x0)
+    }
+
     val fd = fopen(getAbsolutePath(), modeRead)
     try {
         memScoped {

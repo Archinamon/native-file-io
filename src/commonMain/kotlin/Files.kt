@@ -13,10 +13,8 @@ object Files {
             throw UnsupportedOperationException("Do not supported on mingw yet, create tmp files/dirs manually!")
         }
 
-        val parent = dir.getAbsolutePath()
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
+        val parent = dir.getPath()
+        dir.mkdirs()
 
         if (!dir.canWrite()) {
             throw IllegalFileAccess(parent, "Can't create file in the directory")

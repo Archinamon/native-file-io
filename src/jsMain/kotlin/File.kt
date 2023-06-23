@@ -34,6 +34,10 @@ actual class File constructor(jsfile: JsFile) {
         return innerFile.lastModified.toLong()
     }
 
+    actual fun mkdir(): Boolean {
+        throw UnsupportedOperationException("Not available in JS!")
+    }
+
     actual fun mkdirs(): Boolean {
         throw UnsupportedOperationException("Not available in JS!")
     }
@@ -48,6 +52,10 @@ actual class File constructor(jsfile: JsFile) {
 
     actual fun isDirectory(): Boolean {
         return false
+    }
+
+    actual fun getPath(): String {
+        return innerFile.name
     }
 
     actual fun getAbsolutePath(): String {

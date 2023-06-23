@@ -1,12 +1,12 @@
 plugins {
-    kotlin("multiplatform") version "1.7.10"
+    kotlin("multiplatform") version "1.8.20"
     id("org.jetbrains.dokka") version "1.4.32"
     id("maven-publish")
     id("signing")
 }
 
 group = "me.archinamon"
-version = "1.3.6"
+version = "1.3.7"
 
 val isRunningInIde: Boolean = System.getProperty("idea.active")
     ?.toBoolean() == true
@@ -18,7 +18,7 @@ repositories {
 }
 
 kotlin {
-    js { nodejs() }
+    js(IR) { nodejs() }
 
     jvm()
 
@@ -26,8 +26,15 @@ kotlin {
     linuxX64()
 
     // darwin macos code
-    macosX64 {
+    macosX64() {
+        if (testApp?.toBoolean() == true) {
+            binaries {
+                executable()
+            }
+        }
+    }
 
+    macosArm64 {
         if (testApp?.toBoolean() == true) {
             binaries {
                 executable()
@@ -47,10 +54,16 @@ kotlin {
         val posixMain by creating {
             dependsOn(commonMain)
         }
+        val macosArm64Main by getting {
+            dependsOn(posixMain)
+            if (testApp?.toBoolean() == true) {
+                kotlin.srcDirs("src/macosRunner/kotlin")
+            }
+        }
         val macosX64Main by getting {
             dependsOn(posixMain)
             if (testApp?.toBoolean() == true) {
-                kotlin.srcDirs("src/macosX64Runner/kotlin")
+                kotlin.srcDirs("src/macosRunner/kotlin")
             }
         }
         val linuxX64Main by getting {

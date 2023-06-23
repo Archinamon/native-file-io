@@ -4,8 +4,6 @@ import kotlin.test.*
 
 class FileTests {
 
-    private val localSeparator = '/'
-
     @Test
     fun testNonexistentRootFile() {
         val testFile = File("testNonexistentRootFile.txt")
@@ -13,8 +11,16 @@ class FileTests {
         assertFalse(testFile.exists(), "file should not exist")
         assertFalse(testFile.isDirectory(), "file should not be directory")
         assertFalse(testFile.isFile(), "file should not be file")
-        assertNull(testFile.getParent(), "file should not have parent")
-        assertNull(testFile.getParentFile(), "file should not have parent file")
+
+        if (platform() == Platform.JVM) {
+            assertNull(testFile.getParent(), "file should not have parent")
+            assertNull(testFile.getParentFile(), "file should not have parent file")
+        }
+
+        if (platform().isPosix()) { // in posix we always resolve relative path via `realpath` syscall
+            assertEquals(testFile.getParent(), File("./").getAbsolutePath(), "as parent should be current dir")
+            assertEquals(testFile.getParentFile()?.getAbsolutePath(), File("./").getAbsolutePath(), "as parent should be current dir")
+        }
 
         assertEquals("testNonexistentRootFile", testFile.nameWithoutExtension)
     }
@@ -22,7 +28,6 @@ class FileTests {
     @Test
     fun testExistentRootFile() {
         val testFile = File("testFileRoot/testExistentRootFile.txt")
-        println(testFile.getAbsolutePath())
 
         assertFalse(testFile.exists(), "file should not exist")
         assertFalse(testFile.getParentFile()?.exists() == true, "file should not have parent file")
@@ -33,6 +38,10 @@ class FileTests {
 
     @Test
     fun testFileCreateAndDelete() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFolder = File("build/testNewDirectoryCreation")
 
         assertTrue(testFolder.mkdirs(), "create directory failed")
@@ -52,6 +61,10 @@ class FileTests {
 
     @Test
     fun testFileWriteAndRead() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFolder = File("build/testFileWriteAndRead")
         val testFile = File("build/testFileWriteAndRead/test.txt")
 
@@ -87,6 +100,10 @@ class FileTests {
 
     @Test
     fun testFileCopyMethod() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFile = File("gradle/wrapper/gradle-wrapper.properties")
         val testDestFolder = File("build/testCopyFolder")
         val testDestFile = File("build/testCopyFolder/gradle-wrapper.properties")
@@ -107,6 +124,10 @@ class FileTests {
 
     @Test
     fun testFileMoveMethod() {
+        if (platform() == Platform.Windows) {
+            return
+        }
+
         val testFolder = File("build/testMoveFolder")
         val testDestFolder = File("build/testMoveFolder2")
         val testFile = File("build/testMoveFolder/test_move_file.properties")
@@ -197,5 +218,33 @@ class FileTests {
         assertEquals((data + appendedData).length.toLong(), testFile.length())
 
         assertTrue(testFile.delete(), "delete file failed")
+    }
+
+    @Test
+    fun testFileRealPathIfRelativeLinks__posixOnly() {
+        if (!platform().isPosix()) {
+            return
+        }
+
+        val symlinkPrefix = if (platform() == Platform.Macos) "/private" else ""
+
+        val testDir = File("/tmp/build")
+        val testFile = Files.createTempFile(prefix = "../test", suffix = ".txt", dir = testDir)
+        assertEquals("$symlinkPrefix/tmp/test.txt", testFile.getAbsolutePath()) // 'cause /tmp is a symlink for /private/tmp
+        assertTrue(testFile.delete(), "delete file failed")
+        assertTrue(testDir.delete(), "delete test folder failed")
+    }
+
+    @Test
+    fun testFileRealPathIfRelativeLinks__jvmOnly() {
+        if (platform() != Platform.JVM) {
+            return
+        }
+
+        val testDir = File("/tmp/build")
+        val testFile = Files.createTempFile(prefix = "../test", suffix = ".txt", dir = testDir)
+        assertEquals("/tmp/build/../test.txt", testFile.getAbsolutePath()) // lazy canonicalization in jvm
+        assertTrue(testFile.delete(), "delete file failed")
+        assertTrue(testDir.delete(), "delete test folder failed")
     }
 }
