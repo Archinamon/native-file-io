@@ -298,7 +298,7 @@ actual fun File.readBytes(): ByteArray {
             val size = ftell(fd).convert<Int>()
             fseek(fd, 0, SEEK_SET)
 
-            return ByteArray(size + 1).also { buffer ->
+            return ByteArray(size).also { buffer ->
                 fread(buffer.refTo(0), 1UL, size.convert(), fd)
                     .ensureUnixCallResult("fread") { ret -> ret > 0U }
             }
