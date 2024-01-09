@@ -231,7 +231,7 @@ actual class File actual constructor(
 
     internal fun writeBytes(bytes: ByteArray, mode: Int, size: ULong = ULong.MAX_VALUE, elemSize: ULong = 1U) {
         if (!exists()) {
-            throw NoSuchElementException("File or directory not exists")
+            throw NoSuchElementException("File or directory '${getAbsolutePath()}' not exists")
         }
 
         val fd = fopen(getAbsolutePath(), if (mode and O_APPEND == O_APPEND) modeAppend else modeRewrite)
@@ -284,7 +284,7 @@ actual val File.mimeType: String
 
 actual fun File.readBytes(): ByteArray {
     if (!exists()) {
-        throw NoSuchElementException("File or directory not exists")
+        throw NoSuchElementException("File or directory '${getAbsolutePath()}' not exists")
     }
 
     if (length() == 0L) {
