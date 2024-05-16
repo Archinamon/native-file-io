@@ -23,6 +23,10 @@ jobs:
       - uses: fwilhe2/setup-kotlin@main
         with:
           install-native: true
+
+      - name: Select Xcode 14
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: sudo xcode-select -s /Applications/Xcode_14.3.1.app/Contents/Developer
       
       - name: Cache Build files
         uses: actions/cache@v2
