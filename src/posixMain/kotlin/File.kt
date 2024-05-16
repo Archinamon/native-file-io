@@ -51,6 +51,13 @@ actual class File actual constructor(
     private val modeAppend = "a"
     private val modeRewrite = "w"
 
+    private val absPath: String
+
+    init {
+        // not lazy but preserve on obj init
+        absPath = getRealAbsolutePath()
+    }
+
     actual fun getParent(): String? {
         val path = getAbsolutePath()
         val idx = path.lastIndexOf(filePathSeparator)
@@ -76,6 +83,14 @@ actual class File actual constructor(
     actual fun getPath(): String = pathname
 
     actual fun getAbsolutePath(): String {
+        if (absPath.isNotBlank()) {
+            return absPath
+        }
+
+        return getRealAbsolutePath()
+    }
+
+    private fun getRealAbsolutePath(): String {
         return memScoped {
             val path = if (pathname.first() != filePathSeparator || pathname.first() == '.') {
                 getcwd(allocArray(FILENAME_MAX), FILENAME_MAX.convert())
@@ -309,7 +324,7 @@ actual fun File.readBytes(): ByteArray {
 }
 
 actual fun File.writeBytes(bytes: ByteArray) {
-    // no need to use pinning or memscope, cause it's inside the method already does
+    // no need to use pinning or memscope, 'cause it's inside the method already does
     writeBytes(bytes, O_RDWR, bytes.size.convert(), Byte.SIZE_BYTES.convert())
 }
 
